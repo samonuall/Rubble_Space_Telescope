@@ -11,9 +11,10 @@ def biggest_contour(contours):
 	return contours[index]
 
 def same_brightness(image):
-	std = np.std(image)
+	saturation = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)[..., 1]
+	std = np.std(saturation)
 	print(std)
-	return std < 70
+	return std < 58
 
 """
 Assumes that poster is the biggest contour in the image. 
@@ -45,7 +46,8 @@ def crop_poster(image):
 	
 	return (thresh, cropped_img)
 
-thresh, cropped_img = crop_poster('plastic_test.jpg')
+name = 'reflected_light'
+thresh, cropped_img = crop_poster('test_imgs/{}.jpg'.format(name))
 cv2.imshow('Thresh', thresh)
 cv2.imshow('Poster', cropped_img)
 cv2.waitKey(0)  
