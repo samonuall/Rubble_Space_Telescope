@@ -11,11 +11,11 @@ def biggest_contour(contours):
 			index = i
 	return contours[index]
 
-def same_brightness(image):
+def bright(image):
 	saturation = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)[..., 1]
-	std = np.std(saturation)
-	print(std)
-	return std < 50
+	mean = np.mean(saturation)
+	print(mean)
+	return mean > 88
 
 
 """
@@ -28,43 +28,65 @@ Optimal conditions:
 def create_contours(image):
 	image = cv2.imread(image)
 	greyscaled = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	with open('timer.txt', mode='r') as f:
-		prev_dt = float(f.readline())
-		
-	if same_brightness(image) or prev_dt > 30:
-		max_val = greyscaled.item(greyscaled.argmax())
-		ret, thresh = cv2.threshold(greyscaled, max_val-80, 255, cv2.THRESH_BINARY)
+	max_val = greyscaled.item(np.argmax(greyscaled))
+	
+	if bright(image):
+		ret, thresh = cv2.threshold(greyscaled, max_val-70, 255, cv2.THRESH_BINARY)
 	else:
-		thresh = cv2.adaptiveThreshold(greyscaled, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-									cv2.THRESH_BINARY, 11, 2)
-	t0 = time.process_time()
+		ret, thresh = cv2.threshold(greyscaled, max_val-150, 255, cv2.THRESH_BINARY)
 	cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
 									cv2.CHAIN_APPROX_SIMPLE)
 	
-	if prev_dt <=30:
-		dt = time.process_time() - t0
-		with open('timer.txt', mode='w') as f:
-			f.write(str(round(dt, 2)))
-
 	return (image, thresh, contours)
 
-def crop_poster(image, contours):
-	cnt = biggest_contour(contours)
-	
+def find_extremes(cnt):
 	leftmost = tuple(cnt[cnt[:,:,0].argmin()][0])
 	rightmost = tuple(cnt[cnt[:,:,0].argmax()][0])
 	topmost = tuple(cnt[cnt[:,:,1].argmin()][0])
 	bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
-	cropped_img = image[topmost[1]: bottommost[1], leftmost[0]: rightmost[0], :]
+	return (leftmost, rightmost, topmost, bottommost)
+
+def find_plastic_contours(image, contours):
+	cnt = biggest_contour(contours)
+	#Poster edge extremes
+	p_leftmost, p_rightmost, p_topmost, p_bottommost = find_extremes(cnt)
+	cv2.circle(image, p_leftmost, 5, (255, 0, 0), 3)
+	cv2.circle(image, p_rightmost, 5, (255, 0, 0), 3)
+	cv2.circle(image, p_bottommost, 5, (255, 0, 0), 3)
+	cv2.circle(image, p_topmost, 5, (255, 0, 0), 3)
 	
-	return cropped_img
+	plastic_contours = []
+	for contour in contours:
+		if contour is cnt:
+			continue
+		epsilon = 0.05*cv2.arcLength(contour, True)
+		approx = cv2.approxPolyDP(contour, epsilon, True)
+		
+		leftmost, rightmost, topmost, bottommost = find_extremes(approx)
+		if (leftmost[0] < p_leftmost[0] or rightmost[0] > p_rightmost[0]
+			or topmost[1] < p_topmost[1] or bottommost[1] > p_bottommost[1]):
+			continue
+		plastic_contours.append(approx)
+	
+	return (poster_contour, plastic_contours)
+	
+def find_percentages(poster_contour, plastic_contours):
+	plastic_area = 0
+	poster_area = cv2.contourArea(poster_contour)
+	for contour in plastic_contours:
+		plastic_area += cv2.contourArea(contour)
+	area_percent = (poster_area - plastic_area) / poster_area
+	
 
 #Example Code
-img_name = 'good'
+img_name = 'blurry'
 img_path = 'test_imgs/{}.jpg'.format(img_name)
 image, thresh, contours = create_contours(img_path)
-cropped_img = crop_poster(image, contours)
-cv2.imshow('Thresh', thresh)
-cv2.imshow('Poster', cropped_img)
+plastic_contours = find_plastic_contours(image, contours)
+
+image = cv2.drawContours(image, plastic_contours, -1, (0, 255, 0), 3)
+image2 = cv2.drawContours(image.copy(), contours, -1, (0, 255, 0), 3)
+cv2.imshow('Plastic Contours', image)
+cv2.imshow('All Contours', image2)
 cv2.waitKey(0)  
-cv2.destroyAllWindows()  
+cv2.destroyAllWindows()
