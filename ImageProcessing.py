@@ -9,7 +9,7 @@ def biggest_contour(contours):
 		if area > max_area:
 			max_area = area
 			index = i
-	return contours[index]
+	return index
 
 def bright(image):
 	saturation = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)[..., 1]
@@ -37,7 +37,7 @@ def create_contours(image):
 	cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
 									cv2.CHAIN_APPROX_SIMPLE)
 	
-	return (image, thresh, contours)
+	return (image, thresh, contours, hierarchy)
 
 def find_extremes(cnt):
 	leftmost = tuple(cnt[cnt[:,:,0].argmin()][0])
@@ -46,44 +46,43 @@ def find_extremes(cnt):
 	bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
 	return (leftmost, rightmost, topmost, bottommost)
 
-def find_plastic_contours(image, contours):
-	cnt = biggest_contour(contours)
+def find_plastic_contours(image, contours, hierarchy):
+	poster_index = biggest_contour(contours)
+	print(poster_index)
+	hierarchy = hierarchy[0]
 	#Poster edge extremes
-	p_leftmost, p_rightmost, p_topmost, p_bottommost = find_extremes(cnt)
-	cv2.circle(image, p_leftmost, 5, (255, 0, 0), 3)
-	cv2.circle(image, p_rightmost, 5, (255, 0, 0), 3)
-	cv2.circle(image, p_bottommost, 5, (255, 0, 0), 3)
-	cv2.circle(image, p_topmost, 5, (255, 0, 0), 3)
 	
 	plastic_contours = []
-	for contour in contours:
-		if contour is cnt:
+	for i, contour in enumerate(contours):
+		if i is poster_index:
 			continue
 		epsilon = 0.05*cv2.arcLength(contour, True)
 		approx = cv2.approxPolyDP(contour, epsilon, True)
 		
-		leftmost, rightmost, topmost, bottommost = find_extremes(approx)
-		if (leftmost[0] < p_leftmost[0] or rightmost[0] > p_rightmost[0]
-			or topmost[1] < p_topmost[1] or bottommost[1] > p_bottommost[1]):
-			continue
-		plastic_contours.append(approx)
+		if hierarchy[i][-1] == poster_index:
+			plastic_contours.append(approx)
 	
-	return (poster_contour, plastic_contours)
+	return (plastic_contours)
 	
-def find_percentages(poster_contour, plastic_contours):
-	plastic_area = 0
-	poster_area = cv2.contourArea(poster_contour)
+def find_percentages(plastic_contours):
+	"""
+	For better measurements, first find the number of each sized plastics,
+	then calculate percentage of plastic on board. Maybe compare that to
+	other way of calculating percent area to double check
+	"""
 	for contour in plastic_contours:
-		plastic_area += cv2.contourArea(contour)
-	area_percent = (poster_area - plastic_area) / poster_area
+		area = cv2.contourArea(contour)
+		if area > 
+		
+	pass
 	
 
 #Example Code
-img_name = 'blurry'
+img_name = 'good'
 img_path = 'test_imgs/{}.jpg'.format(img_name)
-image, thresh, contours = create_contours(img_path)
-plastic_contours = find_plastic_contours(image, contours)
-
+image, thresh, contours, hierarchy = create_contours(img_path)
+plastic_contours = find_plastic_contours(image, contours, hierarchy)
+find_percentages(plastic_contours)
 image = cv2.drawContours(image, plastic_contours, -1, (0, 255, 0), 3)
 image2 = cv2.drawContours(image.copy(), contours, -1, (0, 255, 0), 3)
 cv2.imshow('Plastic Contours', image)
