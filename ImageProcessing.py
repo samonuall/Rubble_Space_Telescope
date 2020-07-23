@@ -11,11 +11,11 @@ def biggest_contour(contours):
 			index = i
 	return contours[index]
 
-def same_brightness(image):
+def bright(image):
 	saturation = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)[..., 1]
-	std = np.std(saturation)
-	print(std)
-	return std < 50
+	mean = np.mean(saturation)
+	print(mean)
+	return mean > 88
 
 
 """
@@ -28,43 +28,51 @@ Optimal conditions:
 def create_contours(image):
 	image = cv2.imread(image)
 	greyscaled = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-	with open('timer.txt', mode='r') as f:
-		prev_dt = float(f.readline())
-		
-	if same_brightness(image) or prev_dt > 30:
-		max_val = greyscaled.item(greyscaled.argmax())
-		ret, thresh = cv2.threshold(greyscaled, max_val-80, 255, cv2.THRESH_BINARY)
+	
+	if bright(image) or prev_dt > 30:
+		ret, thresh = cv2.threshold(greyscaled, max_val-70, 255, cv2.THRESH_BINARY)
 	else:
-		thresh = cv2.adaptiveThreshold(greyscaled, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-									cv2.THRESH_BINARY, 11, 2)
+		ret, thresh = cv2.threshold(greyscaled, max_val-150, 255, cv2.THRESH_BINARY)
+	
 	t0 = time.process_time()
 	cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
 									cv2.CHAIN_APPROX_SIMPLE)
 	
-	if prev_dt <=30:
-		dt = time.process_time() - t0
-		with open('timer.txt', mode='w') as f:
-			f.write(str(round(dt, 2)))
-
 	return (image, thresh, contours)
 
-def crop_poster(image, contours):
+def find_extremes(cnt):
+	leftmost = cnt[cnt[:,:,0].argmin()][0][0]
+	rightmost = cnt[cnt[:,:,0].argmax()][0][0]
+	topmost = cnt[cnt[:,:,1].argmin()][0][1]
+	bottommost = cnt[cnt[:,:,1].argmax()][0][0]
+	return (leftmost, rightmost, topmost, bottommost)
+
+def find_plastic_contours(image, contours):
 	cnt = biggest_contour(contours)
+	#Poster edge extremes
+	p_leftmost, p_rightmost, p_topmost, p_bottommost = find_extremes(cnt)
 	
-	leftmost = tuple(cnt[cnt[:,:,0].argmin()][0])
-	rightmost = tuple(cnt[cnt[:,:,0].argmax()][0])
-	topmost = tuple(cnt[cnt[:,:,1].argmin()][0])
-	bottommost = tuple(cnt[cnt[:,:,1].argmax()][0])
-	cropped_img = image[topmost[1]: bottommost[1], leftmost[0]: rightmost[0], :]
+	plastic_contours = []
+	for contour in contours:
+		leftmost, rightmost, topmost, bottommost = find_extremes(contour)
+		if (leftmost < p_leftmost or rightmost > p_rightmost
+			or topmost < p_topmost or bottommost > p_bottommost):
+			continue
+		plastic_contours.append(contour)
 	
-	return cropped_img
+	return plastic_contours
+	
+	
 
 #Example Code
 img_name = 'good'
 img_path = 'test_imgs/{}.jpg'.format(img_name)
 image, thresh, contours = create_contours(img_path)
-cropped_img = crop_poster(image, contours)
-cv2.imshow('Thresh', thresh)
-cv2.imshow('Poster', cropped_img)
+plastic_contours = find_plastic_contours(image, contours)
+
+image = cv2.drawContours(image, plastic_contours, -1, (0, 255, 0), 3)
+image2 = cv2.drawContours(image.copy(), contours, -1, (0, 255, 0), 3)
+cv2.imshow('Plastic Contours', image)
+cv2.imshow('All Contours', image2)
 cv2.waitKey(0)  
-cv2.destroyAllWindows()  
+cv2.destroyAllWindows()
