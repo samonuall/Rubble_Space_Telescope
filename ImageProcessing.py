@@ -70,21 +70,75 @@ def find_percentages(plastic_contours):
 	then calculate percentage of plastic on board. Maybe compare that to
 	other way of calculating percent area to double check
 	"""
+	square_areas = []
 	for contour in plastic_contours:
 		area = cv2.contourArea(contour)
-		if area > 
-		
-	pass
+		if area > 2000:
+			square_areas.append(area)
 	
+	max_area = max(square_areas)
+	big_small_ratio = max_area / min(square_areas)
+	#0 is small, 1 is medium, 2 is large
+	#Organized by ratio number, first spot is outcome if the ratio is same, second for 
+	#not same. Same key is set below
+	square_types = {'Small-Large': (-1,), 'Small-Medium': (1, 0), 'Medium-Large': (2, 1), 'Same': (-1, -1)}
+	if big_small_ratio >= 6:
+		#Large and small, possibly medium
+		key = 'Small-Large'
+	elif big_small_ratio >= 3.5:
+		#Medium and small only
+		key = 'Small-Medium'
+	elif big_small_ratio >= 2:
+		#Large and medium only
+		key = 'Medium-Large'
+	elif big_small_ratio >= 0:
+		#Only one size
+		key = 'Same'
+		area = square_areas[0]
+		if area >= 40000:
+			square_types['Same'] = (2, 2)
+		elif area >= 10000:
+			square_types['Same'] = (1, 1)
+		else:
+			square_types['Same'] = (0, 0)
+	
+	num_small = 0
+	num_medium = 0
+	num_large = 0
+	poten_types = square_types[key]
+	if poten_types[0] == -1:
+		for area in square_areas:
+			ratio = max_area / area
+			if ratio >= 6:
+				num_small += 1
+			elif ratio >= 2:
+				num_medium += 1
+			elif ratio >= 0:
+				num_large += 1
+	else:
+		for area in square_areas:
+			ratio = max_area / area
+			if ratio > 0 and ratio < 2:
+				square_type = poten_types[0]
+			else:
+				square_type = poten_types[1]
+			if square_type == 0:
+				num_small += 1
+			elif square_type == 1:
+				num_medium += 1
+			elif square_type == 2:
+				num_large += 1
+		
+	return (num_small, num_medium, num_large)
 
 #Example Code
-img_name = 'good'
+img_name = 'blurry'
 img_path = 'test_imgs/{}.jpg'.format(img_name)
 image, thresh, contours, hierarchy = create_contours(img_path)
 plastic_contours = find_plastic_contours(image, contours, hierarchy)
-find_percentages(plastic_contours)
 image = cv2.drawContours(image, plastic_contours, -1, (0, 255, 0), 3)
 image2 = cv2.drawContours(image.copy(), contours, -1, (0, 255, 0), 3)
+print(find_percentages(plastic_contours))
 cv2.imshow('Plastic Contours', image)
 cv2.imshow('All Contours', image2)
 cv2.waitKey(0)  
