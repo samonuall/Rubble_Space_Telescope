@@ -39,6 +39,7 @@ def create_contours(image):
 	
 	return (image, thresh, contours, hierarchy)
 
+#Maybe use later for redundancy in case of fatal wrong poster location error
 def find_extremes(cnt):
 	leftmost = tuple(cnt[cnt[:,:,0].argmin()][0])
 	rightmost = tuple(cnt[cnt[:,:,0].argmax()][0])
@@ -48,13 +49,12 @@ def find_extremes(cnt):
 
 def find_plastic_contours(image, contours, hierarchy):
 	poster_index = biggest_contour(contours)
-	print(poster_index)
 	hierarchy = hierarchy[0]
 	#Poster edge extremes
 	
 	plastic_contours = []
 	for i, contour in enumerate(contours):
-		if i is poster_index:
+		if i == poster_index:
 			continue
 		epsilon = 0.05*cv2.arcLength(contour, True)
 		approx = cv2.approxPolyDP(contour, epsilon, True)
@@ -64,7 +64,7 @@ def find_plastic_contours(image, contours, hierarchy):
 	
 	return (plastic_contours)
 	
-def find_percentages(plastic_contours):
+def find_square_types(plastic_contours):
 	"""
 	For better measurements, first find the number of each sized plastics,
 	then calculate percentage of plastic on board. Maybe compare that to
@@ -131,14 +131,14 @@ def find_percentages(plastic_contours):
 		
 	return (num_small, num_medium, num_large)
 
-#Example Code
-img_name = 'blurry'
+#Testing the Functions
+img_name = 'far_away'
 img_path = 'test_imgs/{}.jpg'.format(img_name)
 image, thresh, contours, hierarchy = create_contours(img_path)
 plastic_contours = find_plastic_contours(image, contours, hierarchy)
 image = cv2.drawContours(image, plastic_contours, -1, (0, 255, 0), 3)
 image2 = cv2.drawContours(image.copy(), contours, -1, (0, 255, 0), 3)
-print(find_percentages(plastic_contours))
+print(find_square_types(plastic_contours))
 cv2.imshow('Plastic Contours', image)
 cv2.imshow('All Contours', image2)
 cv2.waitKey(0)  
