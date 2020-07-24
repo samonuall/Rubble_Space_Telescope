@@ -37,6 +37,9 @@ def create_contours(image):
 	cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
 									cv2.CHAIN_APPROX_SIMPLE)
 	
+	poster_contour = contours[biggest_contour(contours)]
+	x,y,w,h = cv2.boundingRect(poster_contour)
+	poster_contour = cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,0),2) 
 	return (image, thresh, contours, hierarchy)
 
 #Maybe use later for redundancy in case of fatal wrong poster location error
@@ -132,7 +135,7 @@ def find_square_types(plastic_contours):
 	return (num_small, num_medium, num_large)
 
 #Testing the Functions
-img_name = 'far_away'
+img_name = 'bright'
 img_path = 'test_imgs/{}.jpg'.format(img_name)
 image, thresh, contours, hierarchy = create_contours(img_path)
 plastic_contours = find_plastic_contours(image, contours, hierarchy)
