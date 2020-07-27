@@ -12,8 +12,6 @@ print(imuBoot())
 #print(btBoot())
 
 while True:
-    if(orbitTypeImg()):
-        if(overImage()):
-            print('in')
-    else:
-        continue
+    time.sleep(2)
+    print(getyaw())
+
