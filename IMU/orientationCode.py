@@ -16,8 +16,9 @@ xs = []
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 
-while time.time() - start < 15:
-    time.sleep(0.1)
+prevyaw = 0
+while time.time() - start < 60:
+    time.sleep(1)
     accel_x, accel_y, accel_z = sensor.accelerometer
     mag_x, mag_y, mag_z = sensor.magnetometer
     
@@ -60,27 +61,28 @@ while time.time() - start < 15:
     mag_x_comp1 = mag_x*math.cos(pitch_rad) + mag_y*math.sin(roll_rad)*math.sin(pitch_rad) + mag_z*math.cos(roll_rad)*math.sin(pitch_rad)
     mag_y_comp1 = mag_y * math.cos(roll_rad) - mag_z * math.sin(roll_rad)
     
-    yaw = numpy.arctan2(-mag_y_comp1, mag_x_comp1) - 1.6
-    yaw = math.sin(yaw)
-    yaw = 180*math.asin(yaw)/numpy.pi
-    '''
-    if yaw < 0:
-        yaw = yaw + 360
-    print(mag_y)
-    print(mag_x)
+    yaw = numpy.arctan2(-mag_y_comp1, mag_x_comp1) - 1.55
+    yaw = 150*math.sin(yaw)
+    nonmanipyaw = yaw
     
-    if(mag_y <= -10 and mag_y >= -65 and mag_x < 10 and mag_x > -20):
-        yaw = (yaw -90)*2.25
-    elif(mag_y >= -20 and mag_y <= 0 and mag_x <= 25 and mag_x >= 0):
-        yaw = 90 + (130 -yaw)*2.25
-    elif(mag_y <= 0 and mag_y >= -30 and mag_x >= 20 and mag_x <= 40):
-        yaw = 180 + (90 - yaw)*1.8
-    elif(mag_y > -45 and mag_y <= -20 and mag_x > 10 and mag_x < 40):
-        yaw = 270 + (yaw - 40)*1.8
-    print("yaw: " + str(yaw))
-    '''
+    if(prevyaw == 0):
+        prevyaw = yaw
+        print('one')
+    elif(yaw > prevyaw and yaw > 0 and yaw < 90):
+        yaw = yaw
+    elif(yaw < prevyaw and yaw < 90):
+        yaw = 180 - yaw
+    elif(yaw > prevyaw and yaw < 0):
+        yaw = 360 + yaw
+    
+    
+    print(yaw)
+    
+    
+    prevyaw = nonmanipyaw - 1
     xs.append(time.time())
     ys.append(yaw)
+    
     
 ax.clear()
 ax.scatter(xs,ys,label = "Yaw")
