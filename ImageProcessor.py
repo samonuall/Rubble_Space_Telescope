@@ -20,11 +20,6 @@ class ImageProcessor():
 				index = i
 		return index
 
-	
-	def bright(self):
-		self.image_HSV = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
-		mean = np.mean(self.image_HSV[..., 1])
-		return mean > 88
 
 
 	"""
@@ -36,12 +31,8 @@ class ImageProcessor():
 	"""
 	def create_contours(self):
 		greyscaled = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
-		max_val = greyscaled.item(np.argmax(greyscaled))
 		
-		if self.bright():
-			ret, thresh = cv2.threshold(greyscaled, max_val-70, 255, cv2.THRESH_BINARY)
-		else:
-			ret, thresh = cv2.threshold(greyscaled, max_val-150, 255, cv2.THRESH_BINARY)
+		ret, thresh = cv2.threshold(greyscaled, max_val-100, 255, cv2.THRESH_BINARY)
 		cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
 										cv2.CHAIN_APPROX_SIMPLE)
 		
@@ -52,7 +43,7 @@ class ImageProcessor():
 		rect = cv2.minAreaRect(cnt)
 		box = cv2.boxPoints(rect)
 		contours[poster_index] = np.int0(box)
-		cv2.drawContours(greyscaled, [contours[poster_index]], 0, 255, 5)
+		"""cv2.drawContours(greyscaled, [contours[poster_index]], 0, 255, 5)
 		
 		if self.bright():
 			ret, thresh = cv2.threshold(greyscaled, max_val-70, 255, cv2.THRESH_BINARY)
@@ -64,11 +55,11 @@ class ImageProcessor():
 		
 		poster_index = self.biggest_contour(contours1)
 		image1 = self.image.copy()
-		cv2.drawContours(image1, contours1, -1, (255, 0, 0), 3)
-		cv2.imshow('Image', image1)
+		cv2.drawContours(image1, contours, -1, (255, 0, 0), 3)"""
+		cv2.imshow('thresh', thresh)
 		cv2.waitKey(0)
 		cv2.destroyAllWindows()
-		return (contours1, hierarchy1, poster_index)
+		return (contours, hierarchy, poster_index)
 	
 		
 		
@@ -202,7 +193,7 @@ class ImageProcessor():
 
 
 #Testing the Functions
-img_name = 'far_away'
+img_name = 'kat_test'
 img_path = '/home/pi/Rubble_Space_Telescope/test_imgs/{}.jpg'.format(img_name)
 image_processor = ImageProcessor(img_path)
 
