@@ -40,7 +40,7 @@ def captureOrbit():
         time.sleep(1)
         if(getOrbitCount() > 10):
             return None
-        if(endorbit() or ((time%60) < 3):
+        if((endorbit() and (time%60) < 3) or ((time%60) < 3)):
             sendTelem()
             transferOrbit()
         if(overImage()):
@@ -65,8 +65,10 @@ def sendTelem():
     bt.sendFile(bdaddr, 'data_transfer/Ground_Comms.txt')
     ground_signal = 0
     while(ground_signal == 0):
-        #Check file for 1
+        #Check file for number other than zero
         open('data_transfer/ground_signal.txt', mode='r') as f:
-        f.readline()
+        ground_signal = int(f.readline())
+        time.sleep(.05)
+
     telemData = ''
     return None
