@@ -43,7 +43,7 @@ class ImageProcessor():
 		else:
 			ret, thresh = cv2.threshold(greyscaled, max_val-150, 255, cv2.THRESH_BINARY)
 		cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
-										cv2.CHAIN_APPROX_NONE)
+										cv2.CHAIN_APPROX_SIMPLE)
 		
 		#Create box around poster then make greyscale white around the edges of the 
 		#poster board so that plastics on the edge are recognized as seperate contours
@@ -61,7 +61,7 @@ class ImageProcessor():
 		
 		cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
 										cv2.CHAIN_APPROX_SIMPLE)
-		
+		#cv2.drawContours(self.image, contours, -1, (255, 0, 0), 3)
 		return (contours, hierarchy, poster_index)
 	
 		
