@@ -26,6 +26,13 @@ Sajiv_mag_scale = [0.97, 1, 1.03]
 def imuBoot():
     return 'ADCS is go for launch' ;
 def getyaw():
+    global prevyaw
+    global yaw
+    global imgcount
+    global timecount
+    global orbitCount
+    global telemString
+    
     accel_x, accel_y, accel_z = sensor.accelerometer
     mag_x, mag_y, mag_z = sensor.magnetometer
     

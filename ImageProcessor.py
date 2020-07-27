@@ -10,6 +10,7 @@ class ImageProcessor():
 		#Type and color are calculated in later functions, for now variable only holds contours
 		self.plastic_contours = self.find_plastic_contours()
 	
+	
 	@staticmethod
 	def biggest_contour(contours):
 		max_area = -1
