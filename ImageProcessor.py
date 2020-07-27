@@ -52,17 +52,23 @@ class ImageProcessor():
 		rect = cv2.minAreaRect(cnt)
 		box = cv2.boxPoints(rect)
 		contours[poster_index] = np.int0(box)
-		cv2.drawContours(greyscaled, [contours[poster_index]], 0, 255, 10)
+		cv2.drawContours(greyscaled, [contours[poster_index]], 0, 255, 5)
 		
 		if self.bright():
 			ret, thresh = cv2.threshold(greyscaled, max_val-70, 255, cv2.THRESH_BINARY)
 		else:
 			ret, thresh = cv2.threshold(greyscaled, max_val-150, 255, cv2.THRESH_BINARY)
 		
-		cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
+		cont_img, contours1, hierarchy1 = cv2.findContours(thresh, cv2.RETR_TREE, 
 										cv2.CHAIN_APPROX_SIMPLE)
-		#cv2.drawContours(self.image, contours, -1, (255, 0, 0), 3)
-		return (contours, hierarchy, poster_index)
+		
+		poster_index = self.biggest_contour(contours1)
+		image1 = self.image.copy()
+		cv2.drawContours(image1, contours1, -1, (255, 0, 0), 3)
+		cv2.imshow('Image', image1)
+		cv2.waitKey(0)
+		cv2.destroyAllWindows()
+		return (contours1, hierarchy1, poster_index)
 	
 		
 		
@@ -84,7 +90,6 @@ class ImageProcessor():
 			if hierarchy[i][-1] == self.poster_index:
 				plastic_contours.append([approx])
 				self.square_areas.append(area)
-		
 		return plastic_contours
 		
 	
@@ -197,12 +202,10 @@ class ImageProcessor():
 
 
 #Testing the Functions
-img_name = 'good'
+img_name = 'far_away'
 img_path = '/home/pi/Rubble_Space_Telescope/test_imgs/{}.jpg'.format(img_name)
 image_processor = ImageProcessor(img_path)
+
 print(img_name)
 print(image_processor.find_percentages())
-cv2.imshow('Image', image_processor.image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
 
