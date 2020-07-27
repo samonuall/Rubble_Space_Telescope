@@ -197,7 +197,7 @@ class ImageProcessor():
 
 
 #Testing the Functions
-img_name = 'image8'
+img_name = 'good'
 img_path = '/home/pi/Rubble_Space_Telescope/test_imgs/{}.jpg'.format(img_name)
 image_processor = ImageProcessor(img_path)
 print(img_name)
