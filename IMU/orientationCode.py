@@ -25,8 +25,8 @@ while time.time() - start < 60:
     mag_offset = [15.15, -18.8, 23.35]
     mag_scale = [0.97, 1, 1.03]
     mag_x = mag_x*mag_scale[0] - mag_offset[0]
-    mag_y = mag_y*mag_scale[1] - mag_offset[0]
-    mag_z = mag_z*mag_scale[2] - mag_offset[0]
+    mag_y = mag_y*mag_scale[1] - mag_offset[1]
+    mag_z = mag_z*mag_scale[2] - mag_offset[2]
     #Gives Pitch Data then decides which quadrant the arctan value is and adds/subtracts to give a final output in degrees
     pitch = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
     pitch_corrected = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
