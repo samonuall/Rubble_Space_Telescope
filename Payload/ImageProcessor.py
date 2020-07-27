@@ -43,12 +43,25 @@ class ImageProcessor():
 		else:
 			ret, thresh = cv2.threshold(greyscaled, max_val-150, 255, cv2.THRESH_BINARY)
 		cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
+										cv2.CHAIN_APPROX_NONE)
+		
+		#Create box around poster then make greyscale white around the edges of the 
+		#poster board so that plastics on the edge are recognized as seperate contours
+		poster_index = self.biggest_contour(contours)
+		cnt = contours[poster_index]
+		rect = cv2.minAreaRect(cnt)
+		box = cv2.boxPoints(rect)
+		contours[poster_index] = np.int0(box)
+		cv2.drawContours(greyscaled, [contours[poster_index]], 0, 255, 10)
+		
+		if self.bright():
+			ret, thresh = cv2.threshold(greyscaled, max_val-70, 255, cv2.THRESH_BINARY)
+		else:
+			ret, thresh = cv2.threshold(greyscaled, max_val-150, 255, cv2.THRESH_BINARY)
+		
+		cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
 										cv2.CHAIN_APPROX_SIMPLE)
 		
-		poster_index = self.biggest_contour(contours)
-		poster_contour = contours[poster_index]
-		x,y,w,h = cv2.boundingRect(poster_contour)
-		poster_contour = cv2.rectangle(self.image,(x,y),(x+w,y+h),(0,255,0),2) 
 		return (contours, hierarchy, poster_index)
 	
 		
@@ -147,7 +160,7 @@ class ImageProcessor():
 		mean_h_val = cv2.mean(self.image_HSV[cy-length:cy+length,cx-length:cx+length])[:-1]
 		if mean_h_val[0] >= 160:
 			self.plastic_contours[index].append('Red')
-			print(mean_h_val, 'Red')
+			#print(mean_h_val, 'Red')
 		elif mean_h_val[0] >= 110:
 			self.plastic_contours[index].append('Blue')
 			print(mean_h_val, 'Blue')
@@ -184,8 +197,8 @@ class ImageProcessor():
 
 
 #Testing the Functions
-img_name = 'far_away'
-img_path = 'test_imgs/{}.jpg'.format(img_name)
+img_name = 'image8'
+img_path = '/home/pi/Rubble_Space_Telescope/test_imgs/{}.jpg'.format(img_name)
 image_processor = ImageProcessor(img_path)
 print(img_name)
 print(image_processor.find_percentages())
