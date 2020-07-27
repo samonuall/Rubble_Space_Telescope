@@ -82,11 +82,6 @@ def getyaw():
     prevyaw = nonmanipyaw - 1
     return yaw
 
-def orbitTypeImg():
-    if(orbitCount == 1 or orbitCount == 4 or orbitCount == 7):
-        return True
-    else:
-        return False
 
 def overImage():
     global yaw
@@ -98,12 +93,11 @@ def overImage():
         return True
     
 def endOrbit():
-    orbitCount += 1
-    telemString += " Starting orbit " + orbitCount
-    return telemString
+    if(imgcount >= 3):
+        orbitCount()
+        return True
+    
+def getOrbitCount():
+    return orbitCount()  
 
-def timecount():
-    while True:
-        time.sleep(0.1)
-        timecount += 0.1
 
