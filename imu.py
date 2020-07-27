@@ -13,12 +13,21 @@ sensor = adafruit_fxos8700.FXOS8700(i2c)
 
 #all variables
 yaw = 0
-imgcounter = 0
-time = 0
+imgcount = 0
+timecount = 0
 orbitCount = 1
 telemString = ""
 
-while True:
+'''
+the master master code needs to call functions from the IMU fuile: we determined 3 functions
+1) run a test code to make sure the IMU is working
+2) boot up the IMu and begin reporting readings
+3) return what orbit the satteltile is on (orbit number 1, etc.)
+'''
+
+def imuBoot():
+    return 'ADCS is go for launch' ;
+def getyaw():
     accelX, accelY, accelZ = sensor.accelerometer
     magX, magY, magZ = sensor.magnetometer
 
@@ -37,39 +46,33 @@ while True:
     #yaw to 0-360
     if yaw > 360:
         yaw -= 360
-    #set orbit end
-    if(imgcounter >= 3):
+    if(imgcount >= 3):
         endOrbit()
-        imgcounter = 0
-'''
-the master master code needs to call functions from the IMU fuile: we determined 3 functions
-1) run a test code to make sure the IMU is working
-2) boot up the IMu and begin reporting readings
-3) return what orbit the satteltile is on (orbit number 1, etc.)
-'''
-
-def starttest():
     return yaw
-def orbitType():
+def orbitTypeImg():
     if(orbitCount == 1 or orbtiCount == 4 or completedOrbits == 7):
-        return "Image"
+        return True
     else:
-        return "Tranfer"
+        return False
 
 def overImage():
     if((yaw in range(350,360)) or (yaw in range (0,10)) or (yaw in range (110,130)) or (yaw in range (230,250))):
-        imgcounter += 1
+        imgcount += 1
         telemString += " Image taken at " + time
         return True
     else:
-      overImage()
-
+        overImage()
+    
 def endOrbit():
     orbitCount += 1
     telemString += " Starting orbit " + orbitCount
     return telemString
 
-def starttime():
+def time():
     while True:
         time.sleep(0.1)
-        time += 0.1
+        timecount += 0.1
+
+while True:
+    print(getyaw())
+
