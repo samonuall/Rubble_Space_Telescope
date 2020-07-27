@@ -39,13 +39,10 @@ def getyaw():
     #Original Yaw Eq: yaw = (180/np.pi)*np.arctan2(-mag_y, mag_x)
     yaw = (180/np.pi)*np.arctan2(-mag_y, mag_x)
     #Fixing
-    yaw = (yaw + 360) % 360
-    pitch = (((180/np.pi) * pitch) + 360) % 360
-    roll = (((180/np.pi) * roll) + 360) % 360
+    pitch = ((180/np.pi) * pitch) 
+    roll = ((180/np.pi) * roll)
 
     #yaw to 0-360
-    if yaw > 360:
-        yaw -= 360
     if(imgcount >= 3):
         endOrbit()
     return yaw
@@ -68,11 +65,8 @@ def endOrbit():
     telemString += " Starting orbit " + orbitCount
     return telemString
 
-def time():
+def timecount():
     while True:
         time.sleep(0.1)
         timecount += 0.1
-
-while True:
-    print(getyaw())
 
