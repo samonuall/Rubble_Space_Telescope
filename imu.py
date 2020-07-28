@@ -105,7 +105,7 @@ def getOrbitCount():
     return orbitCount
 
 
-def setimgcnt(count)
+def setimgcnt(count):
     global imgcount
     imgcount = count
     

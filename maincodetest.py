@@ -13,7 +13,7 @@ from imu import *
 from ImageProcessor import *
 from camera_capture import *
 
-bdaddr = "" #bluetooth address
+bdaddr = "8C:85:90:A0:D6:84" #bluetooth address
 
 telemData = imuBoot() 
 sendTelem()
@@ -57,9 +57,9 @@ def transferOrbit():
     global telemData
     #bt code to send images
     while True:
-        passing = overImage(endorbit() or ((time%60) < 3)
-
-
+        passing = overImage(endorbit() or ((time%60) < 3))
+        return
+        
 def sendTelem():
     global telemData
     with open('data_transfer/Ground_Comms.txt', mode='w') as f:
@@ -68,8 +68,8 @@ def sendTelem():
     ground_signal = 0
     while(ground_signal == 0):
         #Check file for number other than zero
-        open('data_transfer/ground_signal.txt', mode='r') as f:
-        ground_signal = int(f.readline())
+        with open('data_transfer/ground_signal.txt', mode='r') as f:
+            ground_signal = int(f.readline())
         time.sleep(.05)
 
     telemData = ''
