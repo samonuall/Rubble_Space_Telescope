@@ -88,7 +88,8 @@ def overImage():
     global telemString
     global imgcount
     yaw = getyaw()
-    if((yaw in range(350,360)) or (yaw in range (0,10)) or (yaw in range (110,130)) or (yaw in range (230,250))):
+    if((yaw >= 350 and yaw <= 360) or (yaw >= 0 and yaw <= 10) or (yaw >= 110 and yaw <= 130) or (yaw >= 230 and yaw <= 250)):
+        print('in if')
         imgcount += 1
         return True
     

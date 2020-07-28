@@ -14,7 +14,7 @@ import imu as imu
 import ImageProcessor as ip
 import camera_capture as cc
 
-bdaddr = "" #bluetooth address
+bdaddr = "8C:85:90:A0:D6:84" #bluetooth address
 
 initial_time = t.process_time()
 hasStarted = False
@@ -31,6 +31,7 @@ init_orbit = 0
 #this keeps the names of the images from the last captureOrbit
 img_names = []
 def captureOrbit():
+    print(initial_time - t.process_time())
     global telemData
     global img_names
     global intial_time
@@ -40,20 +41,22 @@ def captureOrbit():
         t.sleep(1)
         if imu.getOrbitCount()+init_orbit > 10:
             return None
-        if imu.endorbit() or (initial_time-t.process_time())%60 < 3:
+        if imu.endOrbit() or (initial_time-t.process_time())%60 < 3:
             telemData += 'Orbit completed at ' + time + '/n'
             telemData += 'ADCS good'
             bt.sendTelem()
             transferOrbit()
         if imu.overImage() or (initial_time-t.process_time())%20 < 2:
-            #camera pic
+            print('taking image')
             img_name = cc.take_picture(imu.getOrbitCount()+init_orbit)
             img_names.append(img_name)
             processor = ip.ImageProcessor(img_name)
             telemData += processor.find_percentages()
             telemData += 'Image taken at ' + str(initial_time-t.process_time()) + '\n'+'\n'
-
+            t.sleep(10)
+            
 def transferOrbit():
+    print('enter transfer orbit')
     global telemData
     global img_names
     global init_orbit
@@ -73,6 +76,7 @@ def transferOrbit():
 
 
 def send_images(img_names):
+    print('sending images')
     global bdaddr
     for img_name in img_names:
         bt.sendFile(bdaddr, img_name, '/BWSI2020Group5Images/') #Put path to your dropbox folder here
@@ -82,13 +86,14 @@ def send_images(img_names):
     while(ground_signal == 0 and dt <= 30):
         dt = t.process_time() - t0
         #Check file for number other than zero
-        with open('data_transfer/ground_signal.txt', mode='r') as f:
+        with open('/home/pi/Rubble_Space_Telescope/data_transfer/Ground_Comms.txt', mode='r') as f:
             ground_signal = int(f.readline())
         t.sleep(.05)
     return dt
 
 
 def sendTelem():
+    print('sending telem')
     global telemData
     global bdaddr
     with open('data_transfer/Ground_Comms.txt', mode='w') as f:
@@ -114,6 +119,7 @@ def main():
     
     hasStarted = False
     while hasStarted == False:
+        t.sleep(1)
         if(imu.overImage()):
             imu.setimgcnt(0)
             #startTime()
