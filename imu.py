@@ -23,6 +23,9 @@ Sajiv_mag_offset = [15.15, 15.15, 15.15]
 Sajiv_mag_scale = [0.97, 1, 1.03]
 Sajiv_subtract = 0
 
+Sam_mag_offset = [-1.6, -16.9, 14.75]
+Sam_mag_scale = [1, .85, 1.22]
+Sam_subtract = 0
 
 def imuBoot():
     global telemString
@@ -32,7 +35,7 @@ def getyaw():
     global yaw
     accel_x, accel_y, accel_z = sensor.accelerometer
     mag_x, mag_y, mag_z = sensor.magnetometer
-    
+    #REPLACE MY NAME WITH YOUR NAME BELOW 
     mag_x = mag_x*Sajiv_mag_scale[0] - Sajiv_mag_offset[0]
     mag_y = mag_y*Sajiv_mag_scale[1] - Sajiv_mag_offset[1]
     mag_z = mag_z*Sajiv_mag_scale[2] - Sajiv_mag_offset[2]

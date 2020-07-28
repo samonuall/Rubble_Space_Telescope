@@ -120,7 +120,7 @@ def main():
     hasStarted = False
     while hasStarted == False:
         t.sleep(0.5)
-        if(getyaw() == 0):
+        if(imu.getyaw() >= 355 or getyaw() <= 5):
             initial_time = t.time()
             captureOrbit()
             hasStarted = True
