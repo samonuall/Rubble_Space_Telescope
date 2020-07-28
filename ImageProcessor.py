@@ -10,6 +10,7 @@ class ImageProcessor():
 		#Type and color are calculated in later functions, for now variable only holds contours
 		self.plastic_contours = self.find_plastic_contours()
 	
+	
 	@staticmethod
 	def biggest_contour(contours):
 		max_area = -1
@@ -31,6 +32,8 @@ class ImageProcessor():
 	"""
 	def create_contours(self):
 		greyscaled = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
+		self.image_HSV = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
+		max_val = greyscaled.item(np.argmax(greyscaled))
 		
 		ret, thresh = cv2.threshold(greyscaled, max_val-100, 255, cv2.THRESH_BINARY)
 		cont_img, contours, hierarchy = cv2.findContours(thresh, cv2.RETR_TREE, 
@@ -55,10 +58,10 @@ class ImageProcessor():
 		
 		poster_index = self.biggest_contour(contours1)
 		image1 = self.image.copy()
-		cv2.drawContours(image1, contours, -1, (255, 0, 0), 3)"""
+		cv2.drawContours(image1, contours, -1, (255, 0, 0), 3)
 		cv2.imshow('thresh', thresh)
 		cv2.waitKey(0)
-		cv2.destroyAllWindows()
+		cv2.destroyAllWindows()"""
 		return (contours, hierarchy, poster_index)
 	
 		
@@ -159,10 +162,10 @@ class ImageProcessor():
 			#print(mean_h_val, 'Red')
 		elif mean_h_val[0] >= 110:
 			self.plastic_contours[index].append('Blue')
-			print(mean_h_val, 'Blue')
+			#print(mean_h_val, 'Blue')
 		else:
 			self.plastic_contours[index].append('Green')
-			print(mean_h_val, 'Green')
+			#print(mean_h_val, 'Green')
 			
 			
 	def find_percentages(self):
@@ -192,11 +195,9 @@ class ImageProcessor():
 		return square_sizes+'\n'+color_percents+'\n'+plastic_percent+'\n'
 
 
-#Testing the Functions
+"""#Testing the Functions
 img_name = 'kat_test'
 img_path = '/home/pi/Rubble_Space_Telescope/test_imgs/{}.jpg'.format(img_name)
-image_processor = ImageProcessor(img_path)
+image_processor = ImageProcessor(img_path)"""
 
-print(img_name)
-print(image_processor.find_percentages())
 
