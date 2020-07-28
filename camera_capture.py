@@ -5,6 +5,6 @@ def take_picture(orbit_number):
     with PiCamera() as camera:
         timestamp = time.strftime('%M:%s')[:-8]
         name = '/home/pi/Rubble_Space_Telescope/data_transfer/{}_{}.jpg'.format(orbit_number, timestamp)
-        camera.capture(name, quality=100)
+        camera.capture(name, quality=75)
 
     return name

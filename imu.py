@@ -21,6 +21,7 @@ telemString = ""
 
 Sajiv_mag_offset = [15.15, 15.15, 15.15]
 Sajiv_mag_scale = [0.97, 1, 1.03]
+Sajiv_subtract = 0
 
 
 def imuBoot():
@@ -71,7 +72,6 @@ def getyaw():
     
     if(prevyaw == 0):
         prevyaw = yaw
-        #print('one')
     elif(yaw > prevyaw and yaw > 0 and yaw < 90):
         yaw = yaw
     elif(yaw < prevyaw and yaw < 90):
@@ -80,6 +80,8 @@ def getyaw():
         yaw = 360 + yaw
 
     prevyaw = nonmanipyaw - 1
+    #REPLACE YOUR NAME WITH MINE HERE
+    yaw = yaw - Sajiv_subtract
     return yaw
 
 
