@@ -106,10 +106,9 @@ or other number into ground_signal.txt, ground_signal.txt must only have an int 
 def main():
     global init_orbit
     global initial_time
-    with open('data_transfer/Ground_Comms.txt', mode='w') as f:
-        init_orbit = int(f.readline()[:-2])
+    with open('data_transfer/Ground_Comms.txt', mode='r') as f:
+        init_orbit = int(f.readline())
         initial_time = int(f.readline())
-    telemData = imu.imuBoot() +
     global telemData
     sendTelem()
     
