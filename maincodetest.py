@@ -33,25 +33,24 @@ img_names = []
 def captureOrbit():
     global telemData
     global img_names
-    global intial_time
+    global initial_time
     global init_orbit
     img_names = []
     while True:
         t.sleep(1)
-        print(t.time() - intial_time)
         if imu.getOrbitCount()+init_orbit > 10:
             return None
-        if imu.overImage() or (t.time() - intial_time)%19 < 3:
+        if imu.overImage() or (t.time() - initial_time)%19 < 3:
             print('taking image')
             img_name = cc.take_picture(imu.getOrbitCount()+init_orbit)
             img_names.append(img_name)
             processor = ip.ImageProcessor(img_name)
             #telemData += processor.find_percentages()
-            telemData += 'Image taken at ' + str(t.time() - intial_time()) + '\n'
+            telemData += 'Image taken at ' + str(t.time() - initial_time) + '\n'
             t.sleep(10)
-        if imu.endOrbit() or (t.time() - intial_time())%60 < 3:
+        if imu.endOrbit() or (t.time() - initial_time)%60 < 3:
             print('orbit end')
-            telemData += 'Orbit completed at ' + str(t.time() - intial_time()) + '/n'
+            telemData += 'Orbit completed at ' + str(t.time() - initial_time) + '/n'
             telemData += 'ADCS good'
             #bt.sendTelem()
             #transferOrbit()
