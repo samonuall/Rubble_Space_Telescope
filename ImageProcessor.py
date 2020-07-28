@@ -85,6 +85,9 @@ class ImageProcessor():
 			if hierarchy[i][-1] == self.poster_index:
 				plastic_contours.append([approx])
 				self.square_areas.append(area)
+		
+		if len(self.square_areas):
+			self.square_areas = -1
 		return plastic_contours
 		
 	
@@ -96,6 +99,8 @@ class ImageProcessor():
 		0 means small, 1 means medium, and 2 means large.
 		"""
 		
+		if self.square_areas == -1:
+			return
 		max_area = max(self.square_areas)
 		big_small_ratio = max_area / min(self.square_areas)
 		#0 is small, 1 is medium, 2 is large
@@ -153,6 +158,8 @@ class ImageProcessor():
 	def calc_square_color(self, cnt, index):
 		#Find center of contour and then find mean hue value of small
 		#rectangle in center
+		if self.square_areas == -1:
+			return
 		M = cv2.moments(cnt)
 		cx = int(M['m10']/M['m00'])
 		cy = int(M['m01']/M['m00'])
@@ -171,6 +178,8 @@ class ImageProcessor():
 			
 	def find_percentages(self):
 		self.find_square_types()
+		if self.square_areas == -1:
+			return 'Image doesnt include poster'
 		for i, cnt in enumerate(self.plastic_contours):
 			self.calc_square_color(cnt[0], i)
 		
