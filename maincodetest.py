@@ -120,7 +120,7 @@ def main():
     hasStarted = False
     while hasStarted == False:
         t.sleep(0.5)
-        if(imu.overImage()):
+        if(getyaw() == 0):
             initial_time = t.time()
             captureOrbit()
             hasStarted = True
