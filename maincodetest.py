@@ -38,6 +38,7 @@ def captureOrbit():
     img_names = []
     while True:
         t.sleep(1)
+        print(t.time() - initial_time)
         if imu.getOrbitCount()+init_orbit > 10:
             return None
         if imu.overImage() or (t.time() - initial_time)%19 < 3:
@@ -47,13 +48,12 @@ def captureOrbit():
             processor = ip.ImageProcessor(img_name)
             #telemData += processor.find_percentages()
             telemData += 'Image taken at ' + str(t.time() - initial_time) + '\n'
-            t.sleep(10)
-        if imu.endOrbit() or (t.time() - initial_time)%60 < 3:
+            t.sleep(5)
+        if ((t.time() - initial_time)%60 < 5):
             print('orbit end')
             telemData += 'Orbit completed at ' + str(t.time() - initial_time) + '/n'
             telemData += 'ADCS good'
-            #bt.sendTelem()
-            #transferOrbit()
+            transferOrbit()
        
             
 def transferOrbit():
@@ -121,7 +121,6 @@ def main():
     while hasStarted == False:
         t.sleep(0.5)
         if(imu.overImage()):
-            imu.setimgcnt(0)
             initial_time = t.time()
             captureOrbit()
             hasStarted = True
