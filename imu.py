@@ -18,7 +18,7 @@ imgcount = 0
 timecount = 0
 orbitCount = 1
 telemString = ""
-
+#ADD YOUR VALUES BELOW HERE
 Sajiv_mag_offset = [15.15, 15.15, 15.15]
 Sajiv_mag_scale = [0.97, 1, 1.03]
 Sajiv_subtract = 0
@@ -39,17 +39,18 @@ def getyaw():
     mag_x = mag_x*Sajiv_mag_scale[0] - Sajiv_mag_offset[0]
     mag_y = mag_y*Sajiv_mag_scale[1] - Sajiv_mag_offset[1]
     mag_z = mag_z*Sajiv_mag_scale[2] - Sajiv_mag_offset[2]
+
     
     pitch = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
     pitch_corrected = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
-    if accel_x >= 0 and accel_z >= 0 : 
+    """if accel_x >= 0 and accel_z >= 0 : 
         pass
     elif accel_z <= 0 and accel_x >= 0 :
         pitch_corrected = 180 - pitch
     elif accel_z <= 0 and accel_x < 0 :
         pitch_corrected = 180 - pitch
     elif accel_z >= 0 and accel_x <= 0 :
-        pitch_corrected = pitch + 360
+        pitch_corrected = pitch + 360"""
 
      
     roll = (180) * numpy.arctan2(accel_y, (accel_x*accel_x + accel_z*accel_z)**0.5)/numpy.pi
@@ -117,6 +118,3 @@ def getOrbitCount():
 def getimgcnt():
     global imgcount
     return imgcount
-    
-
-
