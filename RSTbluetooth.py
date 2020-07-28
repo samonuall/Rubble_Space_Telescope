@@ -5,7 +5,7 @@ import os
 def getSizeKB(filepath):
     return(os.path.getsize(filepath)/1024.0)
 
-def sendFile(bdaddr, filepath):
+def sendFile(bdaddr, filepath, toDir="/"):
     # Attempts to send a file over obexftp and returns if it was successful or not
     #
     # param:
@@ -17,7 +17,7 @@ def sendFile(bdaddr, filepath):
     #   float fileSize: the size of the file being sent in kB
     #   int secondsToSend: the time in seconds that it took to send the file
     preTransfer = time.time()
-    transferProcess = subprocess.getoutput("obexftp -b {} -c / -p {}".format(bdaddr, filepath))
+    transferProcess = subprocess.getoutput("obexftp -b {} -c {} -p {}".format(bdaddr, toDir, filepath))
     postTransfer = time.time()
     transferProcess = transferProcess.replace("..."," ").replace(":"," ").replace("."," ").replace("\n"," ").split(" ")
 
