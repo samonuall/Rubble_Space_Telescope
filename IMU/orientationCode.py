@@ -15,18 +15,20 @@ xs = []
 
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
-
 prevyaw = 0
+#ENTER YOUR OFFSET AND SCALE VALUES BELOW IN THIS FORMAT
+Sajiv_mag_offset = [15.15, -18.8, 23.35]
+Sajiv_mag_scale = [0.97, 1, 1.03]
+
 while time.time() - start < 60:
     time.sleep(1)
     accel_x, accel_y, accel_z = sensor.accelerometer
     mag_x, mag_y, mag_z = sensor.magnetometer
     
-    mag_offset = [15.15, -18.8, 23.35]
-    mag_scale = [0.97, 1, 1.03]
-    mag_x = mag_x*mag_scale[0] - mag_offset[0]
-    mag_y = mag_y*mag_scale[1] - mag_offset[1]
-    mag_z = mag_z*mag_scale[2] - mag_offset[2]
+    #REPLACE MY NAME WITH YOURS
+    mag_x = mag_x*Sajiv_mag_scale[0] - Sajiv_mag_offset[0]
+    mag_y = mag_y*Sajiv_mag_scale[1] - Sajiv_mag_offset[0]
+    mag_z = mag_z*Sajiv_mag_scale[2] - Sajiv_mag_offset[0]
     #Gives Pitch Data then decides which quadrant the arctan value is and adds/subtracts to give a final output in degrees
     pitch = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
     pitch_corrected = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
