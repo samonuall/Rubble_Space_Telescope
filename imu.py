@@ -25,7 +25,7 @@ Sajiv_mag_scale = [0.97, 1, 1.03]
 
 def imuBoot():
     global telemString
-    telemString += 'ADCS is go for launch /n' ;
+    return 'ADCS is go for launch /n' ;
 def getyaw():
     global prevyaw
     global yaw
@@ -71,7 +71,7 @@ def getyaw():
     
     if(prevyaw == 0):
         prevyaw = yaw
-        print('one')
+        #print('one')
     elif(yaw > prevyaw and yaw > 0 and yaw < 90):
         yaw = yaw
     elif(yaw < prevyaw and yaw < 90):
@@ -86,18 +86,28 @@ def getyaw():
 def overImage():
     global yaw
     global telemString
+    global imgcount
     yaw = getyaw()
     if((yaw in range(350,360)) or (yaw in range (0,10)) or (yaw in range (110,130)) or (yaw in range (230,250))):
         imgcount += 1
-        telemString += " Image taken at " + time
         return True
     
 def endOrbit():
+    global orbitCount
+    global imgcount
     if(imgcount >= 3):
-        orbitCount()
+        orbitCount += 1
+        imgcount = 0
         return True
     
 def getOrbitCount():
-    return orbitCount()  
+    global orbitCount
+    return orbitCount
+
+
+def setimgcnt(count)
+    global imgcount
+    imgcount = count
+    
 
 
