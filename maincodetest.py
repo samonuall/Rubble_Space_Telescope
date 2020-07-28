@@ -41,17 +41,17 @@ def captureOrbit():
         print(t.time() - intial_time)
         if imu.getOrbitCount()+init_orbit > 10:
             return None
-        if imu.overImage() or (initial_time-t.process_time())%19 < 3:
+        if imu.overImage() or (t.time() - intial_time)%19 < 3:
             print('taking image')
             img_name = cc.take_picture(imu.getOrbitCount()+init_orbit)
             img_names.append(img_name)
             processor = ip.ImageProcessor(img_name)
             #telemData += processor.find_percentages()
-            telemData += 'Image taken at ' + str(initial_time-t.process_time()) + '\n'+'\n'
+            telemData += 'Image taken at ' + str(t.time() - intial_time()) + '\n'
             t.sleep(10)
-        if imu.endOrbit() or (initial_time-t.process_time())%60 < 3:
+        if imu.endOrbit() or (t.time() - intial_time())%60 < 3:
             print('orbit end')
-            telemData += 'Orbit completed at ' + str(initial_time-t.process_time()) + '/n'
+            telemData += 'Orbit completed at ' + str(t.time() - intial_time()) + '/n'
             telemData += 'ADCS good'
             #bt.sendTelem()
             #transferOrbit()
@@ -72,7 +72,7 @@ def transferOrbit():
                 dt = send_images(img_names)
         if dt > 30:
             with open('data_transfer/Ground_Comms.txt', mode='w') as f:
-                f.write(str(orbit_count)+'\n'+str(initial_time))
+                f.write(str(orbit_count)+'\n'+str(t.time() - intial_time()))
             os.system('sudo reboot')
 
 
@@ -114,8 +114,7 @@ def main():
     global init_orbit
     global initial_time
     with open('data_transfer/Ground_Comms.txt', mode='r') as f:
-        init_orbit = int(f.readline())
-        initial_time = int(f.readline())
+        init_orbit = int(f.readline())     
     global telemData
     sendTelem()
     
@@ -124,7 +123,7 @@ def main():
         t.sleep(0.5)
         if(imu.overImage()):
             imu.setimgcnt(0)
-            #startTime()
+            initial_time = t.time()
             captureOrbit()
             hasStarted = True
 

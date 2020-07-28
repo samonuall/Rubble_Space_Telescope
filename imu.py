@@ -88,9 +88,12 @@ def overImage():
     global telemString
     global imgcount
     yaw = getyaw()
-    if((yaw >= 350 and yaw <= 360) or (yaw >= 0 and yaw <= 10) or (yaw >= 110 and yaw <= 130) or (yaw >= 230 and yaw <= 250)):
-        imgcount += 1
-        return True
+    time.sleep(1)
+    yaw2 = getyaw()
+    if(abs((yaw2 - yaw)) < 10):
+        if((yaw >= 350 and yaw <= 360) or (yaw >= 0 and yaw <= 10) or (yaw >= 110 and yaw <= 130) or (yaw >= 230 and yaw <= 250)):
+            imgcount += 1
+            return True
     
 def endOrbit():
     global orbitCount
