@@ -86,7 +86,7 @@ class ImageProcessor():
 				plastic_contours.append([approx])
 				self.square_areas.append(area)
 		
-		if len(self.square_areas):
+		if len(self.square_areas) == 0:
 			self.square_areas = -1
 		return plastic_contours
 		
