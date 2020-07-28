@@ -1,4 +1,5 @@
 import time as t
+import os
 import board
 import busio
 import adafruit_fxos8700
@@ -15,66 +16,110 @@ import camera_capture as cc
 
 bdaddr = "" #bluetooth address
 
-time = 0
+initial_time = t.process_time()
 hasStarted = False
 telemData = ''
+init_orbit = 0
 
 
-def startTime():
+"""def startTime():
     global time
     while True:
         t.sleep(1)
-        time += 1
+        time += 1"""
 
+#this keeps the names of the images from the last captureOrbit
 img_names = []
 def captureOrbit():
     global telemData
     global img_names
+    global intial_time
+    global init_orbit
     img_names = []
     while True:
         t.sleep(1)
-        if(imu.getOrbitCount() > 10):
+        if imu.getOrbitCount()+init_orbit > 10:
             return None
-        if((imu.endorbit() or (time%60) < 3) or ((time%60) < 3)):
+        if imu.endorbit() or (initial_time-t.process_time())%60 < 3:
             telemData += 'Orbit completed at ' + time + '/n'
             telemData += 'ADCS good'
             bt.sendTelem()
             transferOrbit()
-        if(imu.overImage()):
+        if imu.overImage() or (initial_time-t.process_time())%20 < 2:
             #camera pic
-            img_name = cc.take_picture(imu.getOrbitCount()) #orbitnumber is parameter
+            img_name = cc.take_picture(imu.getOrbitCount()+init_orbit)
             img_names.append(img_name)
-            processor = ip.ImageProcessor('data_transfer/{}'.format(img_name))
+            processor = ip.ImageProcessor(img_name)
             telemData += processor.find_percentages()
-            telemData += 'Image taken at ' + time + '\n'
+            telemData += 'Image taken at ' + str(initial_time-t.process_time()) + '\n'+'\n'
 
 def transferOrbit():
     global telemData
-    bt.sendFile(bdaddr, img_name, '/BWSI2020Group5Images/')
-    while True:
-        return None
+    global img_names
+    global init_orbit
+    orbit_count = imu.getOrbitCount() + init_orbit
+    #Resend image if no ground signal, put in a reboot
+    #if 60 seconds have passed with no images transferred
+    for img_name in img_names:
+        dt = send_images(img_names)
+        for i in range(3):
+            if dt > 30:
+                dt = send_images(img_names)
+        if dt > 30:
+            with open('data_transfer/Ground_Comms.txt', mode='w') as f:
+                f.write(str(orbit_count)+'\n'+str(initial_time))
+            os.system('sudo reboot')
 
 
-def sendTelem():
-    global telemData
-    with open('data_transfer/Ground_Comms.txt', mode='w') as f:
-        f.write(telemData)
-    bt.sendFile(bdaddr, 'data_transfer/Ground_Comms.txt', '/BWSI2020Group5Images/')
+
+def send_images(img_names):
+    global bdaddr
+    for img_name in img_names:
+        bt.sendFile(bdaddr, img_name, '/BWSI2020Group5Images/') #Put path to your dropbox folder here
+    t0 = t.process_time()
+    dt = 0
     ground_signal = 0
-    while(ground_signal == 0):
+    while(ground_signal == 0 and dt <= 30):
+        dt = t.process_time() - t0
         #Check file for number other than zero
         with open('data_transfer/ground_signal.txt', mode='r') as f:
             ground_signal = int(f.readline())
         t.sleep(.05)
+    return dt
+
+
+def sendTelem():
+    global telemData
+    global bdaddr
+    with open('data_transfer/Ground_Comms.txt', mode='w') as f:
+        f.write(telemData)
+    bt.sendFile(bdaddr, 'data_transfer/Ground_Comms.txt', '/BWSI2020Group5Images/')
+    ground_signal = 0
 
     telemData = ''
 
-telemData = imu.imuBoot() +
-sendTelem()
+"""
+Before running main code, you have to set Ground_comms.txt to 0 and then next line to 0 as well so that the code
+knows you are on the first orbit. After ground receives an image, they should write a one 
+or other number into ground_signal.txt, ground_signal.txt must only have an int or code will error.
+"""
+def main():
+    global init_orbit
+    global initial_time
+    with open('data_transfer/Ground_Comms.txt', mode='w') as f:
+        init_orbit = int(f.readline()[:-2])
+        initial_time = int(f.readline())
+    telemData = imu.imuBoot() +
+    global telemData
+    sendTelem()
+    
+    hasStarted = False
+    while hasStarted == False:
+        if(imu.overImage()):
+            imu.setimgcnt(0)
+            #startTime()
+            captureOrbit()
+            hasStarted = True
 
-while hasStarted == False:
-    if(imu.overImage()):
-        imu.setimgcnt(0)
-        startTime()
-        captureOrbit()
-        hasStarted = True
+#Run code here
+main()
