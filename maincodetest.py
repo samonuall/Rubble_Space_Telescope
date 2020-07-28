@@ -14,7 +14,8 @@ import imu as imu
 import ImageProcessor as ip
 import camera_capture as cc
 
-bdaddr = "8C:85:90:A0:D6:84" #bluetooth address
+bdaddr = "8C:85:90:A0:D6:84"
+dropboxpath = '/Users/sajivshah/Dropbox/BWSI2020Group5Images'#bluetooth address
 
 initial_time = t.time()
 hasStarted = False
@@ -79,7 +80,7 @@ def send_images(img_names):
     print('sending images')
     global bdaddr
     for img_name in img_names:
-        bt.sendFile(bdaddr, img_name, '/BWSI2020Group5Images/') #Put path to your dropbox folder here
+        bt.sendFile(bdaddr, img_name, dropboxpath) #Put path to your dropbox folder here
     t0 = t.process_time()
     dt = 0
     ground_signal = 0
@@ -98,7 +99,7 @@ def sendTelem():
     global bdaddr
     with open('data_transfer/Ground_Comms.txt', mode='w') as f:
         f.write(telemData)
-    bt.sendFile(bdaddr, 'data_transfer/Ground_Comms.txt', '/BWSI2020Group5Images/')
+    bt.sendFile(bdaddr, 'data_transfer/Ground_Comms.txt', dropboxpath)
     ground_signal = 0
 
     telemData = ''
