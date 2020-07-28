@@ -4,6 +4,7 @@ import time
 
 class ImageProcessor():
 	def __init__(self, image):
+		self.img_name = image
 		self.image = cv2.imread(image)
 		self.contours, self.hierarchy, self.poster_index = self.create_contours()
 		#This variable will be in the form [[contour, type, color], [contour, type, color]].
@@ -186,13 +187,14 @@ class ImageProcessor():
 			elif color is 'Blue':
 				color_areas[2] += areas[square_type]
 		
+		name = self.img_name+'\n'
 		square_sizes = 'Square sizes: {} small {} medium {} large'.format(total_types[0], 
 													total_types[1], total_types[2])
 		total_area = sum(color_areas)
 		color_percents = 'Color percents: {}% red {}% green {}% blue'.format(color_areas[0]/total_area*100,
 													color_areas[1]/total_area*100, color_areas[2]/total_area*100)
 		plastic_percent = '{}% of the board has plastic on it'.format(total_area / 154 * 100)
-		return square_sizes+'\n'+color_percents+'\n'+plastic_percent+'\n'
+		return img_name+square_sizes+'\n'+color_percents+'\n'+plastic_percent+'\n'
 
 
 """#Testing the Functions
