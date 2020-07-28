@@ -24,15 +24,19 @@ Sajiv_mag_scale = [0.97, 1, 1.03]
 
 
 def imuBoot():
-    return 'ADCS is go for launch' ;
+    global telemString
+    telemString += 'ADCS is go for launch /n' ;
 def getyaw():
     global prevyaw
     global yaw
+<<<<<<< HEAD
     global imgcount
     global timecount
     global orbitCount
     global telemString
     
+=======
+>>>>>>> 3da9d49bd12c40a8c554fae8521e06011b063b6e
     accel_x, accel_y, accel_z = sensor.accelerometer
     mag_x, mag_y, mag_z = sensor.magnetometer
     
@@ -86,28 +90,22 @@ def getyaw():
     prevyaw = nonmanipyaw - 1
     return yaw
 
-def orbitTypeImg():
-    if(orbitCount == 1 or orbitCount == 4 or orbitCount == 7):
-        return True
-    else:
-        return False
 
 def overImage():
+    global yaw
+    global telemString
     yaw = getyaw()
     if((yaw in range(350,360)) or (yaw in range (0,10)) or (yaw in range (110,130)) or (yaw in range (230,250))):
         imgcount += 1
         telemString += " Image taken at " + time
         return True
-    else:
-        overImage()
     
 def endOrbit():
-    orbitCount += 1
-    telemString += " Starting orbit " + orbitCount
-    return telemString
+    if(imgcount >= 3):
+        orbitCount()
+        return True
+    
+def getOrbitCount():
+    return orbitCount()  
 
-def timecount():
-    while True:
-        time.sleep(0.1)
-        timecount += 0.1
 
