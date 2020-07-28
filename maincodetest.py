@@ -38,7 +38,6 @@ def captureOrbit():
     img_names = []
     while True:
         t.sleep(1)
-        print(t.time() - initial_time)
         if imu.getOrbitCount()+init_orbit > 10:
             return None
         if imu.overImage() or (t.time() - initial_time)%19 < 3:
@@ -120,7 +119,7 @@ def main():
     hasStarted = False
     while hasStarted == False:
         t.sleep(0.5)
-        if(imu.getyaw() >= 355 or getyaw() <= 5):
+        if(imu.getyaw() >= 355 or imu.getyaw() <= 5):
             initial_time = t.time()
             captureOrbit()
             hasStarted = True
