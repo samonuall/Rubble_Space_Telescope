@@ -7,15 +7,16 @@ import numpy as np
 import math
 import imu
 import RSTbluetooth as bt
+from RSTbluetooth import *
+from RSTbluetooth import *
 from imu import *
 from ImageProcessor import *
 from camera_capture import *
 
 bdaddr = "" #bluetooth address
 
-test_telem = imuBoot() +
-#cameraboot()
-#btBoot()
+telemData = imuBoot() 
+sendTelem()
 
 time = 0
 hasStarted = False
@@ -40,7 +41,9 @@ def captureOrbit():
         time.sleep(1)
         if(getOrbitCount() > 10):
             return None
-        if((endorbit() and (time%60) < 3) or ((time%60) < 3)):
+        if((endorbit() or (time%60) < 3) or ((time%60) < 3)):
+            telemData += 'Orbit completed at ' + time + '/n'
+            telemData += 'ADCS good'
             sendTelem()
             transferOrbit()
         if(overImage()):
@@ -50,19 +53,18 @@ def captureOrbit():
             telemData += processor.find_percentages()
             telemData += 'Image taken at ' + time + '\n'
 
-def transferOrbit(): 
+def transferOrbit():
     global telemData
     #bt code to send images
     while True:
         passing = overImage(endorbit() or ((time%60) < 3)
-        if()
 
 
 def sendTelem():
     global telemData
     with open('data_transfer/Ground_Comms.txt', mode='w') as f:
         f.write(telemData)
-    bt.sendFile(bdaddr, 'data_transfer/Ground_Comms.txt')
+        bt.sendFile(bdaddr, 'data_transfer/Ground_Comms.txt')
     ground_signal = 0
     while(ground_signal == 0):
         #Check file for number other than zero
@@ -71,4 +73,3 @@ def sendTelem():
         time.sleep(.05)
 
     telemData = ''
-    return None
