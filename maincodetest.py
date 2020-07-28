@@ -16,7 +16,7 @@ import camera_capture as cc
 
 bdaddr = "8C:85:90:A0:D6:84" #bluetooth address
 
-initial_time = t.process_time()
+initial_time = t.time()
 hasStarted = False
 telemData = ''
 init_orbit = 0
@@ -31,7 +31,6 @@ init_orbit = 0
 #this keeps the names of the images from the last captureOrbit
 img_names = []
 def captureOrbit():
-    print(initial_time - t.process_time())
     global telemData
     global img_names
     global intial_time
@@ -39,21 +38,24 @@ def captureOrbit():
     img_names = []
     while True:
         t.sleep(1)
+        print(t.time() - intial_time)
         if imu.getOrbitCount()+init_orbit > 10:
             return None
-        if imu.endOrbit() or (initial_time-t.process_time())%60 < 3:
-            telemData += 'Orbit completed at ' + time + '/n'
-            telemData += 'ADCS good'
-            bt.sendTelem()
-            transferOrbit()
-        if imu.overImage() or (initial_time-t.process_time())%20 < 2:
+        if imu.overImage() or (initial_time-t.process_time())%19 < 3:
             print('taking image')
             img_name = cc.take_picture(imu.getOrbitCount()+init_orbit)
             img_names.append(img_name)
             processor = ip.ImageProcessor(img_name)
-            telemData += processor.find_percentages()
+            #telemData += processor.find_percentages()
             telemData += 'Image taken at ' + str(initial_time-t.process_time()) + '\n'+'\n'
             t.sleep(10)
+        if imu.endOrbit() or (initial_time-t.process_time())%60 < 3:
+            print('orbit end')
+            telemData += 'Orbit completed at ' + str(initial_time-t.process_time()) + '/n'
+            telemData += 'ADCS good'
+            #bt.sendTelem()
+            #transferOrbit()
+       
             
 def transferOrbit():
     print('enter transfer orbit')
@@ -119,7 +121,7 @@ def main():
     
     hasStarted = False
     while hasStarted == False:
-        t.sleep(1)
+        t.sleep(0.5)
         if(imu.overImage()):
             imu.setimgcnt(0)
             #startTime()
