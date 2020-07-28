@@ -29,14 +29,6 @@ def imuBoot():
 def getyaw():
     global prevyaw
     global yaw
-<<<<<<< HEAD
-    global imgcount
-    global timecount
-    global orbitCount
-    global telemString
-    
-=======
->>>>>>> 3da9d49bd12c40a8c554fae8521e06011b063b6e
     accel_x, accel_y, accel_z = sensor.accelerometer
     mag_x, mag_y, mag_z = sensor.magnetometer
     

@@ -24,7 +24,6 @@ while time.time() - start < 60:
     time.sleep(1)
     accel_x, accel_y, accel_z = sensor.accelerometer
     mag_x, mag_y, mag_z = sensor.magnetometer
-    
     #REPLACE MY NAME WITH YOURS
     mag_x = mag_x*Sajiv_mag_scale[0] - Sajiv_mag_offset[0]
     mag_y = mag_y*Sajiv_mag_scale[1] - Sajiv_mag_offset[0]
