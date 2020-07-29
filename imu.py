@@ -32,7 +32,6 @@ def getyaw():
     global Sam_north
     global Hasan_north
     global Kat_north
-    global Vanya_north
     global prevyaw
     global yaw
     accel_x, accel_y, accel_z = sensor.accelerometer
