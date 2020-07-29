@@ -192,6 +192,7 @@ class ImageProcessor():
 			return
 		M = cv2.moments(cnt)
 		if M['m00'] == 0:
+			self.square_areas = -1
 			return
 		cx = int(M['m10']/M['m00'])
 		cy = int(M['m01']/M['m00'])
