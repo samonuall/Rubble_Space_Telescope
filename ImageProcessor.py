@@ -159,8 +159,11 @@ class ImageProcessor():
 		#Find center of contour and then find mean hue value of small
 		#rectangle in center
 		if self.square_areas == -1:
+			self.plastic_contours.remove(cnt)
 			return
 		M = cv2.moments(cnt)
+		if M['m00'] == 0:
+			return
 		cx = int(M['m10']/M['m00'])
 		cy = int(M['m01']/M['m00'])
 		length = 50 #Set length of rectangle that is being used to calculate color 
