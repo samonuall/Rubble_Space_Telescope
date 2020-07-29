@@ -61,6 +61,8 @@ def transferOrbit():
     global telemData
     global img_names
     global init_orbit
+    
+    sendTelem()
     orbit_count = imu.getOrbitCount() + init_orbit
     #Resend image if no ground signal, put in a reboot
     #if 60 seconds have passed with no images transferred
