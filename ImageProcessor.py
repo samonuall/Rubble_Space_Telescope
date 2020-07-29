@@ -156,10 +156,18 @@ class ImageProcessor():
 		
 		
 	def calc_square_color(self, cnt, index):
+		sam_red = 160
+		sam_blue = 110
+		"""kat_red = 
+		kat_blue = 
+		hasan_red = 
+		hasan_blue = """
+		sajiv_red = 160
+		sajiv_blue = 110
 		#Find center of contour and then find mean hue value of small
 		#rectangle in center
 		if self.square_areas == -1:
-			self.plastic_contours.remove(cnt)
+			self.plastic_contours.pop(index)
 			return
 		M = cv2.moments(cnt)
 		if M['m00'] == 0:
@@ -168,15 +176,16 @@ class ImageProcessor():
 		cy = int(M['m01']/M['m00'])
 		length = 50 #Set length of rectangle that is being used to calculate color 
 		mean_h_val = cv2.mean(self.image_HSV[cy-length:cy+length,cx-length:cx+length])[:-1]
-		if mean_h_val[0] >= 160:
-			self.plastic_contours[index].append('Red')
-			#print(mean_h_val, 'Red')
-		elif mean_h_val[0] >= 110:
+		
+		if mean_h_val[0] >= sam_red:
+			self.plastic_contours[index].append('Sam')
+			print(mean_h_val, 'Red')
+		elif mean_h_val[0] >= sam_blue:
 			self.plastic_contours[index].append('Blue')
-			#print(mean_h_val, 'Blue')
+			print(mean_h_val, 'Blue')
 		else:
 			self.plastic_contours[index].append('Green')
-			#print(mean_h_val, 'Green')
+			print(mean_h_val, 'Green')
 			
 			
 	def find_percentages(self):
@@ -206,12 +215,12 @@ class ImageProcessor():
 		color_percents = 'Color percents: {}% red {}% green {}% blue'.format(color_areas[0]/total_area*100,
 													color_areas[1]/total_area*100, color_areas[2]/total_area*100)
 		plastic_percent = '{}% of the board has plastic on it'.format(total_area / 154 * 100)
-		return name+square_sizes+'\n'+color_percents+'\n'+plastic_percent+'\n'
+		return img_name+'\n'+square_sizes+'\n'+color_percents+'\n'+plastic_percent+'\n\n'
+		
 
-
-"""#Testing the Functions
-img_name = 'kat_test'
+#Testing the Functions
+"""img_name = '1_0#1'
 img_path = '/home/pi/Rubble_Space_Telescope/test_imgs/{}.jpg'.format(img_name)
-image_processor = ImageProcessor(img_path)"""
-
+image_processor = ImageProcessor(img_path)
+print(image_processor.find_percentages())"""
 
