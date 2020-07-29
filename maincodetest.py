@@ -46,7 +46,7 @@ def captureOrbit():
             img_name = cc.take_picture(imu.getOrbitCount()+init_orbit)
             img_names.append(img_name)
             processor = ip.ImageProcessor(img_name)
-            #telemData += processor.find_percentages()
+            telemData += processor.find_percentages()
             telemData += 'Image taken at ' + str(t.time() - initial_time) + '\n'
             t.sleep(5)
         if ((t.time() - initial_time)%60 < 5):
