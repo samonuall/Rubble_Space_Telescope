@@ -1,10 +1,8 @@
 from picamera import PiCamera
-import time
 
-def take_picture(orbit_number):
+def take_picture(orbit_number, index):
     with PiCamera() as camera:
-        timestamp = time.strftime('%S')
-        name = '/home/pi/Rubble_Space_Telescope/data_transfer/{}_{}.jpg'.format(orbit_number, timestamp)
+        name = '/home/pi/Rubble_Space_Telescope/data_transfer/{}_{}.jpg'.format(orbit_number, index)
         camera.capture(name, quality=75)
 
     return name
