@@ -14,8 +14,8 @@ import imu as imu
 import ImageProcessor as ip
 import camera_capture as cc
 
-bdaddr = "E0:AC:CB:9D:3F:19"
-dropboxpath = '/Users/sajivshah/Dropbox/BWSI2020Group5Images'#bluetooth address
+bdaddr = "E0:AC:CB:9D:3F:19" #bluetooth address
+dropboxpath = '/Users/sajivshah/Dropbox/BWSI2020Group5Images'
 
 initial_time = t.time()
 hasStarted = False
@@ -41,9 +41,9 @@ def captureOrbit():
         t.sleep(1)
         if imu.getOrbitCount()+init_orbit > 10:
             return None
-        if t.time() - initial_time)%19.5 < 3:
+        if t.time() - initial_time)%19 < 3:
             print('taking image')
-            img_name = cc.take_picture(imu.getOrbitCount()+init_orbit)
+            img_name = cc.take_picture(imu.getOrbitCount()+init_orbit, len(img_names))
             img_names.append(img_name)
             processor = ip.ImageProcessor(img_name)
             #telemData += processor.find_percentages()
@@ -86,8 +86,9 @@ def send_images(img_names):
     ground_signal = 0
     while(ground_signal == 0 and dt <= 30):
         dt = t.process_time() - t0
-        #Check file for number other than zero
-        with open('/home/pi/Rubble_Space_Telescope/data_transfer/Ground_Comms.txt', mode='r') as f:
+        successfulDownload, fileSize, downloadTime = getFile(bdaddr, '', '/home/pi/Rubble_Space_Telescope/data_transfer/')
+        #Put code receviing ground_signal from dropbox folder
+        with open('/home/pi/Rubble_Space_Telescope/data_transfer/ground_signal.txt', mode='r') as f:
             ground_signal = int(f.readline())
         t.sleep(.05)
     return dt
