@@ -221,7 +221,10 @@ class ImageProcessor():
 		total_types = [0, 0, 0]
 		areas = {0: 1, 1: 4, 2: 12.25}
 		for cnt_data in self.plastic_contours:
-			contour, square_type, color = cnt_data
+			try:
+				contour, square_type, color = cnt_data
+			except:
+				return 'Image Error'
 			total_types[square_type] += 1
 			if color is 'Red':
 				color_areas[0] += areas[square_type]
