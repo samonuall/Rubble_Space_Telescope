@@ -19,27 +19,25 @@ timecount = 0
 orbitCount = 1
 telemString = ""
 #ADD YOUR VALUES BELOW HERE
-Sajiv_mag_offset = [15.15, 15.15, 15.15]
-Sajiv_mag_scale = [0.97, 1, 1.03]
-Sajiv_subtract = 0
-
-Sam_mag_offset = [-1.6, -16.9, 14.75]
-Sam_mag_scale = [1, .85, 1.22]
-Sam_subtract = 0
+Sajiv_north = 330
+Sam_north = 340
+Hasan_north = 0
+Kat_north = 0
+Vanya_north = 0
 
 def imuBoot():
     global telemString
     return 'ADCS is go for launch /n' ;
 def getyaw():
+    global Sajiv_north
+    global Sam_north
+    global Hasan_north
+    global Kat_north
+    global Vanya_north
     global prevyaw
     global yaw
     accel_x, accel_y, accel_z = sensor.accelerometer
     mag_x, mag_y, mag_z = sensor.magnetometer
-    #REPLACE MY NAME WITH YOUR NAME BELOW 
-    mag_x = mag_x*Sajiv_mag_scale[0] - Sajiv_mag_offset[0]
-    mag_y = mag_y*Sajiv_mag_scale[1] - Sajiv_mag_offset[1]
-    mag_z = mag_z*Sajiv_mag_scale[2] - Sajiv_mag_offset[2]
-
     
     pitch = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
     pitch_corrected = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
@@ -55,6 +53,7 @@ def getyaw():
      
     roll = (180) * numpy.arctan2(accel_y, (accel_x*accel_x + accel_z*accel_z)**0.5)/numpy.pi
     roll_corrected = (180) * numpy.arctan2(accel_y, (accel_x*accel_x + accel_z*accel_z)**0.5)/numpy.pi
+    '''
     if accel_z >= 0 and accel_y < 0:
         pass
     if accel_z <= 0 and accel_y < 0:
@@ -63,17 +62,17 @@ def getyaw():
         roll_corrected = 180 - roll
     if accel_z > 0 and accel_y >= 0:
         roll_corrected = roll + 360
-
+    '''
     roll_rad = roll*numpy.pi/180
     pitch_rad = pitch*numpy.pi/180
     
     mag_x_comp1 = mag_x*math.cos(pitch_rad) + mag_y*math.sin(roll_rad)*math.sin(pitch_rad) + mag_z*math.cos(roll_rad)*math.sin(pitch_rad)
     mag_y_comp1 = mag_y * math.cos(roll_rad) - mag_z * math.sin(roll_rad)
     
-    yaw = numpy.arctan2(-mag_y_comp1, mag_x_comp1) - 1.55
-    yaw = 150*math.sin(yaw)
-    nonmanipyaw = yaw
-    
+    yaw = numpy.arctan2(-mag_y_comp1, mag_x_comp1) 
+    yaw = math.sin(yaw)
+    yaw = yaw*360
+    '''
     if(prevyaw == 0):
         prevyaw = yaw
     elif(yaw > prevyaw and yaw > 0 and yaw < 90):
@@ -82,25 +81,11 @@ def getyaw():
         yaw = 180 - yaw
     elif(yaw > prevyaw and yaw < 0):
         yaw = 360 + yaw
-
-    prevyaw = nonmanipyaw - 1
+    '''
     #REPLACE YOUR NAME WITH MINE HERE
-    yaw = yaw - Sajiv_subtract
-    return yaw
+    if(abs(yaw - Sajiv_north) < 7.5):
+        return True
 
-
-def overImage():
-    global yaw
-    global telemString
-    global imgcount
-    yaw = getyaw()
-    time.sleep(0.2)
-    yaw2 = getyaw()
-    if(abs((yaw2 - yaw)) < 10):
-        print(yaw)
-        if((yaw >= 355 and yaw <= 360) or (yaw >= 0 and yaw <= 5) or (yaw >= 115 and yaw <= 125) or (yaw >= 235 and yaw <= 245)):
-            imgcount += 1
-            return True
     
 def endOrbit():
     global orbitCount
