@@ -47,7 +47,9 @@ def captureOrbit():
             print('taking image')
             img_name = cc.take_picture(imu.getOrbitCount()+init_orbit, len(img_names))
             img_names.append(img_name)
-            processor = ip.ImageProcessor(img_name)
+            #Change my name to yours
+            #Can be Sajiv, Katrina, or Hasan
+            processor = ip.ImageProcessor(img_name, 'Sam')
             telemData += processor.find_percentages()
             telemData += 'Image taken at ' + str(t.time() - initial_time) + '\n'
             t.sleep(5)
