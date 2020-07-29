@@ -52,8 +52,8 @@ def captureOrbit():
             print('orbit end')
             telemData += 'Orbit completed at ' + str(t.time() - initial_time) + '/n'
             telemData += 'ADCS good'
-            img_names = []
             transferOrbit()
+            img_names = []
 
 
 def transferOrbit():
@@ -64,16 +64,13 @@ def transferOrbit():
     orbit_count = imu.getOrbitCount() + init_orbit
     #Resend image if no ground signal, put in a reboot
     #if 60 seconds have passed with no images transferred
-    for img_name in img_names:
+    dt = send_images(img_names)
+    if dt > 30:
         dt = send_images(img_names)
-        for i in range(3):
-            if dt > 30:
-                dt = send_images(img_names)
-        if dt > 30:
-            with open('data_transfer/Ground_Comms.txt', mode='w') as f:
-                f.write(str(orbit_count)+'\n'+str(t.time() - intial_time()))
-            os.system('sudo reboot')
-
+    if dt > 30:
+        with open('data_transfer/Ground_Comms.txt', mode='w') as f:
+            f.write(str(orbit_count)+'\n'+str(t.time() - intial_time()))
+        os.system('sudo reboot')
 
 
 def send_images(img_names):
@@ -138,3 +135,6 @@ def main():
 
 #Run code here
 main()
+
+
+
