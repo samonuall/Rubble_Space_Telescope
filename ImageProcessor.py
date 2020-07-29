@@ -3,14 +3,6 @@ import numpy as np
 import time
 
 class ImageProcessor():
-	sam_red = 160
-	sam_blue = 110
-	kat_red = 
-	kat_blue = 
-	hasan_red = 
-	hasan_blue = 
-	sajiv_red = 160
-	sajiv_blue = 110
 	def __init__(self, image, person):
 		global sam_blue
 		global sam_red
@@ -21,6 +13,14 @@ class ImageProcessor():
 		global kat_red
 		global kat_blue
 		
+		sam_red = 120
+		sam_blue = 60
+		kat_red = 114
+		kat_blue = 104
+		hasan_red = 160
+		hasan_blue = 110
+		sajiv_red = 160
+		sajiv_blue = 110
 		if person == 'Sam':
 			self.blue = sam_blue
 			self.red = sam_red
@@ -254,10 +254,10 @@ def instructor_test(person, img_path):
 	print(image_processor.find_percentages())
 
 #Testing the Functions
-"""img_name = '1_0#1'
+img_name = 'far_away'
 img_path = '/home/pi/Rubble_Space_Telescope/test_imgs/{}.jpg'.format(img_name)
-image_processor = ImageProcessor(img_path)
-print(image_processor.find_percentages())"""
+image_processor = ImageProcessor(img_path, 'Sam')
+print(image_processor.find_percentages())
 
 #Uncomment for instructor testing, change name to person that was in orbit for the picure,
 #and change 'test.jpg' to the image pathname
