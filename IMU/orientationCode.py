@@ -19,7 +19,7 @@ prevyaw = 0
 
 Sajiv_north = 330
 Sam_north = 340
-Hasan_north = 0
+Hasan_north = -292
 Kat_north = -353
 
 while time.time() - start < 60:
