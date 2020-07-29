@@ -254,10 +254,10 @@ def instructor_test(person, img_path):
 	print(image_processor.find_percentages())
 
 #Testing the Functions
-img_name = 'far_away'
+"""img_name = 'far_away'
 img_path = '/home/pi/Rubble_Space_Telescope/test_imgs/{}.jpg'.format(img_name)
 image_processor = ImageProcessor(img_path, 'Sam')
-print(image_processor.find_percentages())
+print(image_processor.find_percentages())"""
 
 #Uncomment for instructor testing, change name to person that was in orbit for the picure,
 #and change 'test.jpg' to the image pathname
