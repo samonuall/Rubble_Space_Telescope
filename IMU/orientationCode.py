@@ -16,12 +16,12 @@ xs = []
 fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 prevyaw = 0
-#ENTER YOUR OFFSET AND SCALE VALUES BELOW IN THIS FORMAT
+
 Sajiv_north = 330
 Sam_north = 340
 Hasan_north = 0
 Kat_north = 0
-Vanya_north = 0
+
 while time.time() - start < 60:
     time.sleep(0.1)
     accel_x, accel_y, accel_z = sensor.accelerometer
