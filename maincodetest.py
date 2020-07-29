@@ -36,23 +36,23 @@ def captureOrbit():
     global img_names
     global initial_time
     global init_orbit
-    img_names = []
     while True:
         t.sleep(1)
         if imu.getOrbitCount()+init_orbit > 10:
             return None
-        if t.time() - initial_time)%19 < 3:
+        if ((t.time() - initial_time%19 < 3) and (t.time() - initial_time > 20)):
             print('taking image')
             img_name = cc.take_picture(imu.getOrbitCount()+init_orbit, len(img_names))
             img_names.append(img_name)
             processor = ip.ImageProcessor(img_name)
-            #telemData += processor.find_percentages()
+            telemData += processor.find_percentages()
             telemData += 'Image taken at ' + str(t.time() - initial_time) + '\n'
             t.sleep(5)
-        if ((t.time() - initial_time)%60 < 5 or len(img_names) >= 3):
+        if (((t.time() - initial_time)%60 < 5 and (t.time() - initial_time) > 60)  or len(img_names) >= 3):
             print('orbit end')
             telemData += 'Orbit completed at ' + str(t.time() - initial_time) + '/n'
             telemData += 'ADCS good'
+            img_names = []
             transferOrbit()
 
 
@@ -64,6 +64,7 @@ def transferOrbit():
     orbit_count = imu.getOrbitCount() + init_orbit
     #Resend image if no ground signal, put in a reboot
     #if 60 seconds have passed with no images transferred
+    sendTelem()
     for img_name in img_names:
         dt = send_images(img_names)
         for i in range(3):
@@ -80,16 +81,24 @@ def send_images(img_names):
     print('sending images')
     global bdaddr
     for img_name in img_names:
-        bt.sendFile(bdaddr, img_name, dropboxpath) #Put path to your dropbox folder here
+        successfulTransfer, fileSize, sendTime = bt.sendFile(bdaddr, img_name, dropboxpath) #Put path to your dropbox folder here
     t0 = t.process_time()
     dt = 0
     ground_signal = 0
+    fail_count = 0
     while(ground_signal == 0 and dt <= 30):
         dt = t.process_time() - t0
-        successfulDownload, fileSize, downloadTime = getFile(bdaddr, '', '/home/pi/Rubble_Space_Telescope/data_transfer/')
+        successfulDownload, fileSize, downloadTime = getFile(bdaddr, dropboxpath + '/ground_signal.txt', '/home/pi/Rubble_Space_Telescope/data_transfer/')
+        if not successfulDownload:
+            fail_count += 1
+        if fail_count >= 9:
+            #reboot?
+            return dt
         #Put code receviing ground_signal from dropbox folder
         with open('/home/pi/Rubble_Space_Telescope/data_transfer/ground_signal.txt', mode='r') as f:
-            ground_signal = int(f.readline())
+            signal = f.readline()
+            if len(signal) > 0:
+                ground_signal = int(signal)
         t.sleep(.05)
     return dt
 
@@ -100,7 +109,7 @@ def sendTelem():
     global bdaddr
     with open('data_transfer/Ground_Comms.txt', mode='w') as f:
         f.write(telemData)
-    bt.sendFile(bdaddr, 'data_transfer/Ground_Comms.txt', dropboxpath)
+    successfulTransfer, fileSize, sendTime = bt.sendFile(bdaddr, 'data_transfer/Ground_Comms.txt', dropboxpath)
     ground_signal = 0
 
     telemData = ''
@@ -114,13 +123,15 @@ def main():
     global init_orbit
     global initial_time
     with open('data_transfer/Ground_Comms.txt', mode='r') as f:
-        init_orbit = int(f.readline())
+        init_orbit = f.readline()
+        if len(init_orbit) > 0:
+            init_orbit = int(init_orbit)
     global telemData
     sendTelem()
 
     hasStarted = False
     while hasStarted == False:
-        t.sleep(0.5)
+        t.sleep(0.2)
         if(imu.getyaw() >= 355 or imu.getyaw() <= 5):
             initial_time = t.time()
             captureOrbit()
