@@ -237,7 +237,7 @@ class ImageProcessor():
 		color_percents = 'Color percents: {}% red {}% green {}% blue'.format(color_areas[0]/total_area*100,
 													color_areas[1]/total_area*100, color_areas[2]/total_area*100)
 		plastic_percent = '{}% of the board has plastic on it'.format(total_area / 154 * 100)
-		return img_name+'\n'+square_sizes+'\n'+color_percents+'\n'+plastic_percent+'\n\n'
+		return name+'\n'+square_sizes+'\n'+color_percents+'\n'+plastic_percent+'\n\n'
 		
 
 def instructor_test(person, img_path):
