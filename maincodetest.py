@@ -21,6 +21,7 @@ initial_time = t.time()
 hasStarted = False
 telemData = ''
 init_orbit = 0
+orbitCount = 0
 
 
 """def startTime():
@@ -36,9 +37,11 @@ def captureOrbit():
     global img_names
     global initial_time
     global init_orbit
+    global orbitCount
+    orbitCount += 1
     while True:
         t.sleep(1)
-        if imu.getOrbitCount()+init_orbit > 10:
+        if orbitCount + init_orbit > 10:
             return None
         if ((t.time() - initial_time)%19 < 3):
             print('taking image')
@@ -61,9 +64,10 @@ def transferOrbit():
     global telemData
     global img_names
     global init_orbit
-    
+    global orbitCount
+    orbitCount += 2
     sendTelem()
-    orbit_count = imu.getOrbitCount() + init_orbit
+    orbit_count = orbitCount + init_orbit
     #Resend image if no ground signal, put in a reboot
     #if 60 seconds have passed with no images transferred
     dt = send_images(img_names)
@@ -137,6 +141,3 @@ def main():
 
 #Run code here
 main()
-
-
-
