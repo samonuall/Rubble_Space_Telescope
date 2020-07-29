@@ -49,7 +49,10 @@ def captureOrbit():
             img_names.append(img_name)
             #Change my name to yours
             #Can be Sajiv, Katrina, or Hasan
-            processor = ip.ImageProcessor(img_name, 'Sam')
+            try:
+                processor = ip.ImageProcessor(img_name, 'Sam')
+            except:
+                telemdata += "Image Processor Error "
             telemData += processor.find_percentages()
             telemData += 'Image taken at ' + str(t.time() - initial_time) + '\n'
             t.sleep(5)
