@@ -23,7 +23,6 @@ Sajiv_north = 330
 Sam_north = 340
 Hasan_north = 0
 Kat_north = -353
-Vanya_north = 
 
 def imuBoot():
     global telemString
