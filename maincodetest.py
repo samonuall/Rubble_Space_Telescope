@@ -14,7 +14,7 @@ import imu as imu
 import ImageProcessor as ip
 import camera_capture as cc
 
-bdaddr = "E0:AC:CB:9D:3F:19" #bluetooth address
+bdaddr = "8C:85:90:A0:D6:84" #bluetooth address
 dropboxpath = '/Users/sajivshah/Dropbox/BWSI2020Group5Images'
 
 initial_time = t.time()
@@ -40,7 +40,7 @@ def captureOrbit():
         t.sleep(1)
         if imu.getOrbitCount()+init_orbit > 10:
             return None
-        if ((t.time() - initial_time%19 < 3) and (t.time() - initial_time > 20)):
+        if ((t.time() - initial_time)%19 < 3):
             print('taking image')
             img_name = cc.take_picture(imu.getOrbitCount()+init_orbit, len(img_names))
             img_names.append(img_name)
@@ -64,7 +64,6 @@ def transferOrbit():
     orbit_count = imu.getOrbitCount() + init_orbit
     #Resend image if no ground signal, put in a reboot
     #if 60 seconds have passed with no images transferred
-    sendTelem()
     for img_name in img_names:
         dt = send_images(img_names)
         for i in range(3):
@@ -131,8 +130,8 @@ def main():
 
     hasStarted = False
     while hasStarted == False:
-        t.sleep(0.2)
-        if(imu.getyaw() >= 355 or imu.getyaw() <= 5):
+        t.sleep(0.1)
+        if(imu.getyaw()):
             initial_time = t.time()
             captureOrbit()
             hasStarted = True
