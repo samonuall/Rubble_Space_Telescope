@@ -17,22 +17,16 @@ fig = plt.figure()
 ax = fig.add_subplot(1,1,1)
 prevyaw = 0
 #ENTER YOUR OFFSET AND SCALE VALUES BELOW IN THIS FORMAT
-Sajiv_mag_offset = [15.15, 15.15, 15.15]
-Sajiv_mag_scale = [0.97, 1, 1.03]
-Sajiv_subtract = 0
-
-Sam_mag_offset = [-1.6, -16.9, 14.75]
-Sam_mag_scale = [1, .85, 1.22]
-Sam_subtract = 0
-
+Sajiv_north = 330
+Sam_north = 340
+Hasan_north = 0
+Kat_north = 0
+Vanya_north = 0
 while time.time() - start < 60:
-    time.sleep(1)
+    time.sleep(0.1)
     accel_x, accel_y, accel_z = sensor.accelerometer
     mag_x, mag_y, mag_z = sensor.magnetometer
-    #REPLACE MY NAME WITH YOURS
-    mag_x = mag_x*Sajiv_mag_scale[0] - Sajiv_mag_offset[0]
-    mag_y = mag_y*Sajiv_mag_scale[1] - Sajiv_mag_offset[0]
-    mag_z = mag_z*Sajiv_mag_scale[2] - Sajiv_mag_offset[0]
+
     #Gives Pitch Data then decides which quadrant the arctan value is and adds/subtracts to give a final output in degrees
     pitch = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
     pitch_corrected = 180 * numpy.arctan2(accel_x, (accel_y*accel_y + accel_z*accel_z)**0.5)/numpy.pi
@@ -66,23 +60,11 @@ while time.time() - start < 60:
     mag_x_comp1 = mag_x*math.cos(pitch_rad) + mag_y*math.sin(roll_rad)*math.sin(pitch_rad) + mag_z*math.cos(roll_rad)*math.sin(pitch_rad)
     mag_y_comp1 = mag_y * math.cos(roll_rad) - mag_z * math.sin(roll_rad)
     
-    yaw = numpy.arctan2(-mag_y_comp1, mag_x_comp1) - 1.55
-    yaw = 150*math.sin(yaw)
-    nonmanipyaw = yaw
-    if(prevyaw == 0):
-        prevyaw = yaw
-        print('one')
-    elif(yaw > prevyaw and yaw > 0 and yaw < 90):
-        yaw = yaw
-    elif(yaw < prevyaw and yaw < 90):
-        yaw = 180 - yaw
-    elif(yaw > prevyaw and yaw < 0):
-        yaw = 360 + yaw
+    yaw = numpy.arctan2(-mag_y_comp1, mag_x_comp1)
+    yaw = math.sin(yaw)
+    yaw = yaw*360
+    print(yaw)
 
-    #REPLACE YOUR NAME HERE
-    yaw = yaw - Sajiv_subtract
-    
-    prevyaw = nonmanipyaw - 1
     xs.append(time.time())
     ys.append(yaw)
     
