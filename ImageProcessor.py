@@ -3,7 +3,36 @@ import numpy as np
 import time
 
 class ImageProcessor():
-	def __init__(self, image):
+	sam_red = 160
+	sam_blue = 110
+	kat_red = 
+	kat_blue = 
+	hasan_red = 
+	hasan_blue = 
+	sajiv_red = 160
+	sajiv_blue = 110
+	def __init__(self, image, person):
+		global sam_blue
+		global sam_red
+		global hasan_blue
+		global hasan_red
+		global sajiv_red
+		global sajiv_blue
+		global kat_red
+		global kat_blue
+		
+		if person == 'Sam':
+			self.blue = sam_blue
+			self.red = sam_red
+		elif person == 'Hasan':
+			self.blue = hasan_blue
+			self.red = hasan_red
+		elif person == 'Sajiv':
+			self.blue = sajiv_blue
+			self.red = sajiv_red
+		elif person == 'Katrina':
+			self.blue = kat_blue
+			self.red = kat_red
 		self.img_name = image
 		self.image = cv2.imread(image)
 		self.contours, self.hierarchy, self.poster_index = self.create_contours()
@@ -156,14 +185,6 @@ class ImageProcessor():
 		
 		
 	def calc_square_color(self, cnt, index):
-		sam_red = 160
-		sam_blue = 110
-		"""kat_red = 
-		kat_blue = 
-		hasan_red = 
-		hasan_blue = """
-		sajiv_red = 160
-		sajiv_blue = 110
 		#Find center of contour and then find mean hue value of small
 		#rectangle in center
 		if self.square_areas == -1:
@@ -177,10 +198,10 @@ class ImageProcessor():
 		length = 50 #Set length of rectangle that is being used to calculate color 
 		mean_h_val = cv2.mean(self.image_HSV[cy-length:cy+length,cx-length:cx+length])[:-1]
 		
-		if mean_h_val[0] >= sam_red:
+		if mean_h_val[0] >= self.red:
 			self.plastic_contours[index].append('Sam')
 			print(mean_h_val, 'Red')
-		elif mean_h_val[0] >= sam_blue:
+		elif mean_h_val[0] >= self.blue:
 			self.plastic_contours[index].append('Blue')
 			print(mean_h_val, 'Blue')
 		else:
@@ -215,8 +236,21 @@ class ImageProcessor():
 		color_percents = 'Color percents: {}% red {}% green {}% blue'.format(color_areas[0]/total_area*100,
 													color_areas[1]/total_area*100, color_areas[2]/total_area*100)
 		plastic_percent = '{}% of the board has plastic on it'.format(total_area / 154 * 100)
-		return name+'\n'+square_sizes+'\n'+color_percents+'\n'+plastic_percent+'\n\n'
+		return img_name+'\n'+square_sizes+'\n'+color_percents+'\n'+plastic_percent+'\n\n'
 		
+
+def instructor_test(person, img_path):
+	global sam_blue
+	global sam_red
+	global hasan_blue
+	global hasan_red
+	global sajiv_red
+	global sajiv_blue
+	global kat_red
+	global kat_blue
+	
+	image_processor = ImageProcessor(img_path, person)
+	print(image_processor.find_percentages())
 
 #Testing the Functions
 """img_name = '1_0#1'
@@ -224,3 +258,6 @@ img_path = '/home/pi/Rubble_Space_Telescope/test_imgs/{}.jpg'.format(img_name)
 image_processor = ImageProcessor(img_path)
 print(image_processor.find_percentages())"""
 
+#Uncomment for instructor testing, change name to person that was in orbit for the picure,
+#and change 'test.jpg' to the image pathname
+#instructor_test('Sam', 'test.jpg')
